@@ -9,6 +9,7 @@ misodata/*
 Video36/*
 Audio36/*
 SubFiles/*
+AcqConversion/*
 
 # Executables
 *~.m

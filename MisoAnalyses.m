@@ -2,7 +2,27 @@
 %{.
 clc; close all; clear;
 
-BlockNum = 2;
+
+global thisfilepath
+thisfile = 'MisoAnalyses.m';
+thisfilepath = fileparts(which(thisfile));
+cd(thisfilepath);
+
+fprintf('\n\n Current working path set to: \n % s \n', thisfilepath)
+
+    
+pathdir0 = thisfilepath;
+pathdir1 = [thisfilepath '/optotrackmedia'];
+pathdir2 = [thisfilepath '/optotracksubfunctions'];
+pathdir3 = [thisfilepath '/optotracksubfunctions/DAQ'];
+gpath = [pathdir0 ':' pathdir1 ':' pathdir2 ':' pathdir3];
+addpath(gpath)
+
+fprintf('\n\n Added folders to path: \n % s \n % s \n % s \n % s \n\n',...
+        pathdir0,pathdir1,pathdir2,pathdir3)
+
+
+
 
 [datafile, datapath, ~] = uigetfile({'*.mat'}, 'Select Timings Dataset.');
 timingpath = [datapath datafile];  
@@ -29,7 +49,7 @@ load(gsrpath);
 %% 
 clc; close all; clear all;
 
-BlockNum = 1;
+
 timingpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1_Timings.mat';
 gsrpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1.mat';
 ORDERxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1_Order.xls';
@@ -82,7 +102,7 @@ ntrials = size(T,1);
 
 sps = 2000;
 musz = 20;
-
+BlockNum = 1;
 
 TrialType = ORDERxlsN(:,6);
 TargetFoil = ORDERxlsN(:,5);
