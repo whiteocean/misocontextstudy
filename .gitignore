@@ -8,6 +8,7 @@ misodata
 misodata/*
 Video36/*
 Audio36/*
+SubFiles/*
 
 # Executables
 *~.m
