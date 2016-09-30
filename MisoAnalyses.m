@@ -12,14 +12,12 @@ fprintf('\n\n Current working path set to: \n % s \n', thisfilepath)
 
     
 pathdir0 = thisfilepath;
-pathdir1 = [thisfilepath '/optotrackmedia'];
-pathdir2 = [thisfilepath '/optotracksubfunctions'];
-pathdir3 = [thisfilepath '/optotracksubfunctions/DAQ'];
-gpath = [pathdir0 ':' pathdir1 ':' pathdir2 ':' pathdir3];
+pathdir1 = [thisfilepath '/SubFiles'];
+gpath = [pathdir0 ':' pathdir1];
 addpath(gpath)
 
-fprintf('\n\n Added folders to path: \n % s \n % s \n % s \n % s \n\n',...
-        pathdir0,pathdir1,pathdir2,pathdir3)
+fprintf('\n\n Added folders to path: \n % s \n % s \n\n',...
+        pathdir0,pathdir1)
 
 
 
