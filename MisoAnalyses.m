@@ -46,40 +46,7 @@ load(gsrpath);
 
 %}
 
-%% 
-clc; close all; clear all;
 
-
-timingpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1_Timings.mat';
-gsrpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1.mat';
-ORDERxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block1_Order.xls';
-RATEDxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Ratings.xlsx';
-
-
-
-% BlockNum = 2;
-% timingpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block2_Timings.mat';
-% gsrpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block2.mat';
-% ORDERxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block2_SO4TO1.xls';
-% RATEDxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Ratings.xlsx';
-% 
-% 
-% BlockNum = 3;
-% timingpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block3_Timings.mat';
-% gsrpath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block3.mat';
-% ORDERxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Block3_Order.xls';
-% RATEDxlspath = '/Users/bradleymonk/Documents/MATLAB/GIT/misocontextstudy/SubFiles/SUB37_TL_Miso/SUB37_TL_miso_Ratings.xlsx';
-
-
-
-
-[ORDERxlsN,ORDERxlsT,ORDERxlsR] = xlsread(ORDERxlspath);
-[RATEDxlsN,RATEDxlsT,RATEDxlsR] = xlsread(RATEDxlspath);
-
-load(timingpath);
-load(gsrpath);
-
-clear gsrpath timingpath datapath ORDERxlspath RATEDxlspath
 
 %%
 
