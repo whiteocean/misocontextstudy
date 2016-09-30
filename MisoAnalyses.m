@@ -22,8 +22,19 @@ fprintf('\n\n Added folders to path: \n % s \n % s \n\n',...
 
 
 
-[datafile, datapath, ~] = uigetfile({'*.mat'}, 'Select Timings Dataset.');
-timingpath = [datapath datafile];  
+[datafile, datapath, ~] = uigetfile({'*.mat'}, 'Select Block 1 Physio Dataset.');
+block1physiopath = [datapath datafile];
+
+filenamebase = datafile(1:9)
+
+
+xlsFiles = dir([imgpathname, IMGfpFile(1:11) '*.xls*']);
+
+
+
+
+
+
 
 [datafile, datapath, ~] = uigetfile({'*.mat'}, 'Select GSR Dataset.');
 gsrpath = [datapath datafile];

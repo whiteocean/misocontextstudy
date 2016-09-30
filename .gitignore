@@ -11,5 +11,5 @@ Audio36/*
 SubFiles/*
 
 # Executables
-*~.m
+*.m~
 .DS_Store
