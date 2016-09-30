@@ -27,74 +27,78 @@ filenamebase = datafile(1:13);
 
 
 block1physiopath = [datapath filenamebase '_block1_physio.mat'];
-block1timingpath = [datapath filenamebase '_block1_timing.xlsx'];
+block1timingpath = [datapath filenamebase '_block1_timings.xlsx'];
 
 block2physiopath = [datapath filenamebase '_block2_physio.mat'];
-block2timingpath = [datapath filenamebase '_block2_timing.xlsx'];
+block2timingpath = [datapath filenamebase '_block2_timings.xlsx'];
 
 
 block3physiopath = [datapath filenamebase '_block3_physio.mat'];
-block3timingpath = [datapath filenamebase '_block3_timing.xlsx'];
+block3timingpath = [datapath filenamebase '_block3_timings.xlsx'];
+
+
+[B1tN,B1tT,~] = xlsread(block1timingpath);
+[B2tN,B2tT,~] = xlsread(block2timingpath);
+[B3tN,B3tT,~] = xlsread(block3timingpath);
+
+load(block1physiopath);
+block1acq = acq;
+load(block2physiopath);
+block2acq = acq;
+load(block3physiopath);
+block3acq = acq;
+
+
+clear acq;
+clear thisfile pathdir0 pathdir1 gpath datafile datapath thisfilepath
+clear block1physiopath block2physiopath block3physiopath
+clear block1timingpath block2timingpath block3timingpath
 
 
 
 
 
-% xlsFiles = dir([imgpathname, IMGfpFile(1:11) '*.xls*']);
+% StartTrial	StartClip	EndClip	EndTrial	SoundPresented	HumanAnimalNon	Rating	ControlMiso
+% StartTrial	StartClip	EndClip	EndTrial	SoundPresented	HumanAnimalNon	Rating	ControlMiso	TextPresented	FoilTarget	SoundTextOrder
+% StartTrial	StartClip	EndClip	EndTrial	SoundPresented	HumanAnimalNon	Rating	ControlMiso
+
+
+% if isnan(B1tN(1))
+%     B1tN = B1tN(2:end,:);
+% end
+% if isnan(RATEDxlsN(1))
+%     RATEDxlsN = RATEDxlsN(2:end,:);
+% end
+
+SubData = block1acq.data;
+
+
+B1tN(1,1) = 1; %makes the first cell value = to 1
+B2tN(1,1) = 1; %makes the first cell value = to 1
+B3tN(1,1) = 1; %makes the first cell value = to 1
+
+
+StartTrial = B1tN(:,1);
+StartClip = B1tN(:,2);
+EndClip = B1tN(:,3);
+EndTrial = B1tN(:,4);
+
+ntrials = size(B1tN,1);
 
 
 
+HumanAnimalNon = B1tN(:,6);
+
+Rating = B1tN(:,7);
+
+FoilTarget = B2tN(:,10);
 
 
-%%
-
-[datafile, datapath, ~] = uigetfile({'*.mat'}, 'Select GSR Dataset.');
-gsrpath = [datapath datafile];
-
-[datafile, datapath, ~] = uigetfile({'*.xls*'}, 'Select XLS ORDER Dataset.');
-ORDERxlspath = [datapath datafile];
-
-[datafile, datapath, ~] = uigetfile({'*.xls*'}, 'Select XLS RATINGS Dataset.');
-RATEDxlspath = [datapath datafile];
-
-[ORDERxlsN,ORDERxlsT,ORDERxlsR] = xlsread(ORDERxlspath);
-[RATEDxlsN,RATEDxlsT,RATEDxlsR] = xlsread(RATEDxlspath);
-
-load(timingpath);
-load(gsrpath);
-
-% clear gsrpath timingpath datapath ORDERxlspath RATEDxlspath
-
-%}
-
-
-
-%%
-
-if isnan(ORDERxlsN(1))
-    ORDERxlsN = ORDERxlsN(2:end,:);
-end
-if isnan(RATEDxlsN(1))
-    RATEDxlsN = RATEDxlsN(2:end,:);
-end
-
-SubData = acq.data;
-T.StartTrial(1) = 1; %makes the first cell value = to 1
-
-StartTrial = T(:,1);
-StartClip = T(:,2);
-EndClip = T(:,3);
-EndTrial = T(:,4);
-
-ntrials = size(T,1);
 
 sps = 2000;
 musz = 20;
 BlockNum = 1;
 
-TrialType = ORDERxlsN(:,6);
-TargetFoil = ORDERxlsN(:,5);
-SubRating = RATEDxlsN(:,BlockNum);
 
 
 
@@ -157,14 +161,20 @@ HRTmu = HRTmu + abs(min(HRTmu));
 
 
 
-%% SELF REPORT RATINGS BLOCK 1, 2, 3
+% SELF REPORT RATINGS BLOCK 1, 2, 3
 
-SubRatingB1 = RATEDxlsN(:,1);
-SubRatingB2 = RATEDxlsN(:,2);
-SubRatingB3 = RATEDxlsN(:,3);
-TrialTypeB1 = RATEDxlsN(:,4);
-TrialTypeB2 = RATEDxlsN(:,5);
-TrialTypeB3 = RATEDxlsN(:,6);
+SubRatingB1 = B1tN(:,7);
+SubRatingB2 = B2tN(:,7);
+SubRatingB3 = B3tN(:,7);
+
+
+% HumanAnimalNon = B1tN(:,6);
+% HumanAnimalNon = B1tN(:,6);
+% HumanAnimalNon = B1tN(:,6);
+
+TrialTypeB1 = B1tN(:,6);
+TrialTypeB2 = B2tN(:,6);
+TrialTypeB3 = B3tN(:,6);
 
 
 
@@ -177,12 +187,12 @@ SubRatingB3se = std(SubRatingB3) / sqrt(numel(SubRatingB3))
 
 
 
-[TThumn, c, v] = find((TrialType == 1));
-[TTanim, c, v] = find((TrialType == 2));
-[TTmisc, c, v] = find((TrialType == 3));
+[TThumn, c, v] = find((HumanAnimalNon == 1));
+[TTanim, c, v] = find((HumanAnimalNon == 2));
+[TTmisc, c, v] = find((HumanAnimalNon == 3));
 
-[TF0, c, v] = find((TargetFoil == 0));
-[TF1, c, v] = find((TargetFoil == 1));
+[TF0, c, v] = find((FoilTarget == 0));
+[TF1, c, v] = find((FoilTarget == 1));
 
 TThumnTF0 = intersect(TF0,TThumn);
 TTanimTF0 = intersect(TF0,TTanim);
@@ -194,17 +204,26 @@ TTmiscTF1 = intersect(TF1,TTmisc);
 
 close all
 
-fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
-hax5 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
-hax6 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
-hax7 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
-hax8 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
+% fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
+% hax5 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
+% hax6 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
+% hax7 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
+% hax8 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
+
+
+
+fh2=figure('Units','normalized','OuterPosition',[.05 .05 .5 .7],'Color','w','MenuBar','none');
+hax5 = axes('Position',[.05 .05 .9 .9],'Color','none'); 
 
 axes(hax5)
 bar([SubRatingB1mu SubRatingB2mu SubRatingB3mu]); hold on;
 errorbar([SubRatingB1mu SubRatingB2mu SubRatingB3mu],[SubRatingB1se SubRatingB2se SubRatingB3se],...
     'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
-title('Self-Report Ratings in Auditory, Informed, Visual Blocks')
+title([filenamebase ' Self-Report Ratings in Auditory, Informed, Visual Blocks'],'Interpreter','none')
+hax5.YLim = [0 10];
+
+
+
 % axis tight
 
 
@@ -317,12 +336,12 @@ GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
 %%
 
 
-[TThumn, c, v] = find((TrialType == 1));
-[TTanim, c, v] = find((TrialType == 2));
-[TTmisc, c, v] = find((TrialType == 3));
+[TThumn, c, v] = find((HumanAnimalNon == 1));
+[TTanim, c, v] = find((HumanAnimalNon == 2));
+[TTmisc, c, v] = find((HumanAnimalNon == 3));
 
-[TF0, c, v] = find((TargetFoil == 0));
-[TF1, c, v] = find((TargetFoil == 1));
+[TF0, c, v] = find((FoilTarget == 0));
+[TF1, c, v] = find((FoilTarget == 1));
 
 
 
@@ -542,8 +561,8 @@ axis tight
 %%
 
 
-TT = repmat(TrialType',5,1);
-SR = repmat(SubRating',5,1);
+TT = repmat(HumanAnimalNon',5,1);
+SR = repmat(Rating',5,1);
 
 
 axGRID5 = axes('Position',[.05 .05 .42 .42],'Color','none'); axis off; hold on;
