@@ -55,7 +55,7 @@ clear block1physiopath block2physiopath block3physiopath
 clear block1timingpath block2timingpath block3timingpath
 
 
-
+% ------------------------------------------------------------------------
 
 
 % StartTrial	StartClip	EndClip	EndTrial	SoundPresented	HumanAnimalNon	Rating	ControlMiso
@@ -70,7 +70,9 @@ clear block1timingpath block2timingpath block3timingpath
 %     RATEDxlsN = RATEDxlsN(2:end,:);
 % end
 
-SubData = block1acq.data;
+SubDataB1 = block1acq.data;
+SubDataB2 = block2acq.data;
+SubDataB3 = block3acq.data;
 
 
 B1tN(1,1) = 1; %makes the first cell value = to 1
@@ -100,13 +102,13 @@ musz = 20;
 BlockNum = 1;
 
 
+% ------------------------------------------------------------------------
 
 
-
-ARM = SubData(:,1);
-NEK = SubData(:,2);
-GSR = SubData(:,3);
-HRT = SubData(:,4);
+ARM = SubDataB1(:,1);
+NEK = SubDataB1(:,2);
+GSR = SubDataB1(:,3);
+HRT = SubDataB1(:,4);
 
 ARM = ARM + abs(mean(ARM));
 NEK = NEK + abs(mean(NEK));
@@ -222,7 +224,7 @@ errorbar([SubRatingB1mu SubRatingB2mu SubRatingB3mu],[SubRatingB1se SubRatingB2s
 title([filenamebase ' Self-Report Ratings in Auditory, Informed, Visual Blocks'],'Interpreter','none')
 hax5.YLim = [0 10];
 
-
+pause(2)
 
 % axis tight
 
@@ -248,7 +250,7 @@ hax5.YLim = [0 10];
 
 
 
-%%
+% ------------------------------------------------------------------------
 
 close all;
 
@@ -278,7 +280,7 @@ axis tight
 
 
 
-%%
+% ------------------------------------------------------------------------
 
 
 
@@ -298,19 +300,19 @@ GSRpctChange = [];
 
 for n = 1:ntrials
     
-    GSRbase = GSRmu(  round(StartTrial{n,1}*(sps/musz) ) : round(StartClip{n,1}*(sps/musz) )  );
+    GSRbase = GSRmu(  round(StartTrial(n)*(sps/musz) ) : round(StartClip(n)*(sps/musz) )  );
     GSRbasePeak(n) = max(GSRbase) - min(GSRbase);
     GSRbaseMean(n) = mean(GSRbase);
     GSRbaseSEM(n) = std(GSRbase) ./ sqrt(numel(GSRbase));
 
 
-    GSRclip = GSRmu(  round((StartClip{n,1}*(sps/musz) ))  :  round((EndClip{n,1}*(sps/musz) ))  );
+    GSRclip = GSRmu(  round((StartClip(n)*(sps/musz) ))  :  round((EndClip(n)*(sps/musz) ))  );
     GSRclipPeak(n) = max(GSRclip) - min(GSRclip);
     GSRclipMean(n) = mean(GSRclip);
     GSRclipSEM(n) = std(GSRclip) ./ sqrt(numel(GSRclip));
 
 
-    GSRbreak = GSRmu(  round((EndClip{n,1}*(sps/musz) ))  :  round((EndTrial{n,1}*(sps/musz) ))  );
+    GSRbreak = GSRmu(  round((EndClip(n)*(sps/musz) ))  :  round((EndTrial(n)*(sps/musz) ))  );
     GSRbreakPeak(n) = max(GSRbreak) - min(GSRbreak);
     GSRbreakMean(n) = mean(GSRbreakPeak);
     GSRbreakSEM(n) = std(GSRbreak) ./ sqrt(numel(GSRbreak));
@@ -333,7 +335,7 @@ GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
 
 
 
-%%
+% ------------------------------------------------------------------------
 
 
 [TThumn, c, v] = find((HumanAnimalNon == 1));
@@ -398,7 +400,9 @@ TFbars = [GSRclipMuHuTF0 GSRclipMuHuTF1;...
 
 
 
-%%
+% ------------------------------------------------------------------------
+
+
 close all
 
 fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
@@ -451,22 +455,7 @@ title('Human(Blue) Animal(Green) Misc(Yellow)')
 axis tight
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+pause(2)
 
 
 
@@ -639,8 +628,8 @@ testSubjectTrialsGSR = [];
 
 startTrialMatrix = round(sps*table2array(StartTrial));
 endTrialMatrix = startTrialMatrix+sps*20;
-testSubject = SubData(:,1);
-testSubjectGSR = SubData(:,3);
+testSubject = SubDataB1(:,1);
+testSubjectGSR = SubDataB1(:,3);
 
 
 for i=1:ntrials
