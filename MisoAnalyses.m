@@ -177,7 +177,7 @@ Block(3).ContMiso = ContMisoB3;
 Block(3).FoilTarget = FoilTarget;
 
 
-clearvars -except Block filenamebase
+clearvars -except Block filenamebase mainmisopath misofigspath
 
 
 
@@ -283,7 +283,7 @@ end
 
 
 %% --------- PLOT Self-Report Ratings in Auditory, Informed, Visual Blocks --------
-clearvars -except Block filenamebase
+clearvars -except Block filenamebase mainmisopath misofigspath
 close all
 
 fh2=figure('Units','normalized','OuterPosition',[.05 .05 .5 .7],'Color','w','MenuBar','none');
@@ -381,7 +381,8 @@ legend('Foil','Target','Location','northwest')
 
 hold on;
 
-errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], RatingFTMu,...
+errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
+         RatingFTMu,...
          RatingFTSe,...
     'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
 title([filenamebase ' Self-Report Ratings in Informed Block(2) Compairing Foil vs Target'],'Interpreter','none')
@@ -398,8 +399,7 @@ cd(mainmisopath);
 
 
 
-%% ------------------------------------------------------------------------
-keyboard
+%% --------- PLOT PREVIEW OF PHYSIO DATA  ----------
 
 close all;
 
@@ -431,7 +431,7 @@ axis tight
 
 
 
-%% ------------------------------------------------------------------------
+%% --------- GET PHYSIO GSR DATA FOR BASELINE CLIP & ITI  ----------
 
 
 
@@ -443,34 +443,34 @@ GSRclipPeak = [];
 GSRclipMean = [];
 GSRclipSEM = [];
 
-GSRbreakPeak = [];
-GSRbreakMean = [];
-GSRbreakSEM = [];
+GSRitiPeak = [];
+GSRitiMean = [];
+GSRitiSEM = [];
 
 GSRpctChange = [];
 
 sps = 2000;
-musz = 20;  % number of data points to average together in the physio data
+musz = 100;  % number of data points to average together in the physio data
 
-
-for n = 1:size(Block(1).StartClip,1);
+for b = 1:3
+for n = 1:size(Block(b).StartClip,1);
     
-    GSRbase = Block(1).GSRmu(  round(Block(1).StartTrial(n)*(sps/musz) ) : round(Block(1).StartClip(n)*(sps/musz) )  );
+    GSRbase = Block(b).GSRmu(  round(Block(b).StartTrial(n)*(sps/musz) ) : round(Block(b).StartClip(n)*(sps/musz) )  );
     GSRbasePeak(n) = max(GSRbase) - min(GSRbase);
     GSRbaseMean(n) = mean(GSRbase);
     GSRbaseSEM(n) = std(GSRbase) ./ sqrt(numel(GSRbase));
 
 
-    GSRclip = Block(1).GSRmu(  round((Block(1).StartClip(n)*(sps/musz) ))  :  round((Block(1).EndClip(n)*(sps/musz) ))  );
+    GSRclip = Block(b).GSRmu(  round((Block(b).StartClip(n)*(sps/musz) ))  :  round((Block(b).EndClip(n)*(sps/musz) ))  );
     GSRclipPeak(n) = max(GSRclip) - min(GSRclip);
     GSRclipMean(n) = mean(GSRclip);
     GSRclipSEM(n) = std(GSRclip) ./ sqrt(numel(GSRclip));
 
 
-    GSRbreak = Block(1).GSRmu(  round((Block(1).EndClip(n)*(sps/musz) ))  :  round((Block(1).EndTrial(n)*(sps/musz) ))  );
-    GSRbreakPeak(n) = max(GSRbreak) - min(GSRbreak);
-    GSRbreakMean(n) = mean(GSRbreakPeak);
-    GSRbreakSEM(n) = std(GSRbreak) ./ sqrt(numel(GSRbreak));
+    GSRiti = Block(b).GSRmu(  round((Block(b).EndClip(n)*(sps/musz) ))  :  round((Block(b).EndTrial(n)*(sps/musz) ))  );
+    GSRitiPeak(n) = max(GSRiti) - min(GSRiti);
+    GSRitiMean(n) = mean(GSRitiPeak);
+    GSRitiSEM(n) = std(GSRiti) ./ sqrt(numel(GSRiti));
     
 
     GSRpctChange(n) = ((GSRclipMean(n) - GSRbaseMean(n)) / (GSRbaseMean(n)));
@@ -478,125 +478,175 @@ for n = 1:size(Block(1).StartClip,1);
 
 end
 
+    GSRpctChangeUPct = prctile(GSRpctChange,95);
+
+    GSRpctChangeLPct = prctile(GSRpctChange,5);
+
+    GSRpctChange(GSRpctChange>GSRpctChangeUPct) = GSRpctChangeUPct;
+
+    GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
 
 
-GSRpctChangeUPct = prctile(GSRpctChange,95);
 
-GSRpctChangeLPct = prctile(GSRpctChange,5);
 
-GSRpctChange(GSRpctChange>GSRpctChangeUPct) = GSRpctChangeUPct;
+    Block(b).GSRbaseMean  = GSRbaseMean;
+    Block(b).GSRbaseSEM   = GSRbaseSEM;
+    
+    Block(b).GSRclipMean  = GSRclipMean;
+    Block(b).GSRclipSEM   = GSRclipSEM;
+    
+    Block(b).GSRitiMean   = GSRitiMean;
+    Block(b).GSRitiSEM    = GSRitiSEM;
+    
+    Block(b).GSRpctChange = GSRpctChange;
+        
+end
 
-GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
 
+%% ------------------------------------------------------------------------
+
+for b = 1:3
+Block(b).GSRbaseMuHu = mean(Block(b).GSRbaseMean(Block(b).Humn));
+Block(b).GSRbaseMuAn = mean(Block(b).GSRbaseMean(Block(b).Anim));
+Block(b).GSRbaseMuMi = mean(Block(b).GSRbaseMean(Block(b).Misc));
+
+Block(b).GSRclipMuHu = mean(Block(b).GSRclipMean(Block(b).Humn));
+Block(b).GSRclipMuAn = mean(Block(b).GSRclipMean(Block(b).Anim));
+Block(b).GSRclipMuMi = mean(Block(b).GSRclipMean(Block(b).Misc));
+
+Block(b).GSRitiMuHu = mean(Block(b).GSRitiMean(Block(b).Humn));
+Block(b).GSRitiMuAn = mean(Block(b).GSRitiMean(Block(b).Anim));
+Block(b).GSRitiMuMi = mean(Block(b).GSRitiMean(Block(b).Misc));
+
+Block(b).GSRpctChHu = mean(Block(b).GSRpctChange(Block(b).Humn));
+Block(b).GSRpctChAn = mean(Block(b).GSRpctChange(Block(b).Anim));
+Block(b).GSRpctChMi = mean(Block(b).GSRpctChange(Block(b).Misc));
+
+
+Block(b).GSRbaseSE = std(Block(b).GSRbaseMean) ./ sqrt(numel(Block(b).GSRbaseMean));
+Block(b).GSRclipSE = std(Block(b).GSRclipMean) ./ sqrt(numel(Block(b).GSRclipMean));
+Block(b).GSRitiSE = std(Block(b).GSRitiMean) ./ sqrt(numel(Block(b).GSRitiMean));
+
+
+Block(b).GSRbars = [Block(b).GSRbaseMuHu Block(b).GSRbaseMuAn Block(b).GSRbaseMuMi;...
+                    Block(b).GSRclipMuHu Block(b).GSRclipMuAn Block(b).GSRclipMuMi;...
+                    Block(b).GSRitiMuHu  Block(b).GSRitiMuAn  Block(b).GSRitiMuMi];
+                
+                
+Block(b).GSRbarsSe = [Block(b).GSRbaseSE Block(b).GSRclipSE Block(1).GSRitiSE;...
+                      Block(b).GSRclipSE Block(b).GSRclipSE Block(1).GSRclipSE;...
+                      Block(b).GSRitiSE  Block(b).GSRitiSE  Block(1).GSRitiSE];                
+
+                
+                
+
+
+Block(b).GSRclipMuHuTF0 = mean(Block(b).GSRclipMean(Block(b).HumnFoil));
+Block(b).GSRclipMuAnTF0 = mean(Block(b).GSRclipMean(Block(b).AnimFoil));
+Block(b).GSRclipMuMiTF0 = mean(Block(b).GSRclipMean(Block(b).MiscFoil));
+
+Block(b).GSRclipMuHuTF1 = mean(Block(b).GSRclipMean(Block(b).HumnTarg));
+Block(b).GSRclipMuAnTF1 = mean(Block(b).GSRclipMean(Block(b).AnimTarg));
+Block(b).GSRclipMuMiTF1 = mean(Block(b).GSRclipMean(Block(b).MiscTarg));
+
+
+Block(b).TFbars = [Block(b).GSRclipMuHuTF0 Block(b).GSRclipMuHuTF1;...
+                   Block(b).GSRclipMuAnTF0 Block(b).GSRclipMuAnTF1;...
+                   Block(b).GSRclipMuMiTF0 Block(b).GSRclipMuMiTF1];
+
+
+end
 
 
 %% ------------------------------------------------------------------------
 
 
-GSRbaseMuHu = mean(GSRbaseMean(Block(1).Humn));
-GSRbaseMuAn = mean(GSRbaseMean(Block(1).Anim));
-GSRbaseMuMi = mean(GSRbaseMean(Block(1).Misc));
-
-GSRclipMuHu = mean(GSRclipMean(Block(1).Humn));
-GSRclipMuAn = mean(GSRclipMean(Block(1).Anim));
-GSRclipMuMi = mean(GSRclipMean(Block(1).Misc));
-
-GSRbreakMuHu = mean(GSRbreakMean(Block(1).Humn));
-GSRbreakMuAn = mean(GSRbreakMean(Block(1).Anim));
-GSRbreakMuMi = mean(GSRbreakMean(Block(1).Misc));
-
-GSRpctChHu = mean(GSRpctChange(Block(1).Humn));
-GSRpctChAn = mean(GSRpctChange(Block(1).Anim));
-GSRpctChMi = mean(GSRpctChange(Block(1).Misc));
-
-
-GSRbaseSE = std(GSRbaseMean) ./ sqrt(numel(GSRbaseMean));
-GSRclipSE = std(GSRclipMean) ./ sqrt(numel(GSRclipMean));
-GSRbreakSE = std(GSRbreakMean) ./ sqrt(numel(GSRbreakMean));
-
-
-
-
-
-GSRclipMuHuTF0 = mean(GSRclipMean(Block(1).HumnFoil));
-GSRclipMuAnTF0 = mean(GSRclipMean(Block(1).AnimFoil));
-GSRclipMuMiTF0 = mean(GSRclipMean(Block(1).MiscFoil));
-
-GSRclipMuHuTF1 = mean(GSRclipMean(Block(1).HumnTarg));
-GSRclipMuAnTF1 = mean(GSRclipMean(Block(1).AnimTarg));
-GSRclipMuMiTF1 = mean(GSRclipMean(Block(1).MiscTarg));
-
-
-TFbars = [GSRclipMuHuTF0 GSRclipMuHuTF1;...
-          GSRclipMuAnTF0 GSRclipMuAnTF1;...
-          GSRclipMuMiTF0 GSRclipMuMiTF1];
-
-
-
-
-% ------------------------------------------------------------------------
-
-
 close all
 
 fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
-hax5 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
-hax6 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
-hax7 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
-hax8 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
+hax5 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
+hax6 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
+hax7 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
+hax8 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
+
+
 
 axes(hax5)
-% bar([GSRpctChHu GSRpctChAn GSRpctChMi])
-bar(TFbars); hold on;
-title('PLAYING: ClipStart to ClipEnd Per Trial - Foil vs True')
-% axis tight
+bar(Block(1).GSRbars); 
+
+hax5.XTickLabel = {'Baseline', 'Clip', 'ITI'};
+legend('Human','Animal','Other','Location','northeast')
+title(['GSR in Block-1 (SUB: ' filenamebase ')'],'Interpreter','none')
+hold on
+
+errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
+         Block(1).GSRbars,...
+         Block(1).GSRbarsSe,...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
+
+
+
 
 axes(hax6)
-bar([GSRbaseMuHu GSRbaseMuAn GSRbaseMuMi]); hold on;
-errorbar([GSRbaseMuHu GSRbaseMuAn GSRbaseMuMi],[GSRbaseSE GSRbaseSE GSRbaseSE],...
-    'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+bar(Block(2).GSRbars); 
 
-title('BASELINE: TrialStart to ClipStart Per Trial')
-% axis tight
+hax6.XTickLabel = {'Baseline', 'Clip', 'ITI'};
+legend('Human','Animal','Other','Location','northeast')
+title(['GSR in Block-2 (SUB: ' filenamebase ')'],'Interpreter','none')
+hold on
+
+errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
+         Block(2).GSRbars,...
+         Block(2).GSRbarsSe,...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
+
+
 
 axes(hax7)
-bar([GSRclipMuHu GSRclipMuAn GSRclipMuMi]); hold on;
-errorbar([GSRclipMuHu GSRclipMuAn GSRclipMuMi],[GSRclipSE GSRclipSE GSRclipSE],...
-    'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+bar(Block(3).GSRbars); 
 
-title('PLAYING: ClipStart to ClipEnd Per Trial')
-% axis tight
+hax7.XTickLabel = {'Baseline', 'Clip', 'ITI'};
+legend('Human','Animal','Other','Location','northeast')
+title(['GSR in Block-3 (SUB: ' filenamebase ')'],'Interpreter','none')
+hold on
 
+errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
+         Block(3).GSRbars,...
+         Block(3).GSRbarsSe,...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
+    
+    
+    
+    
+    
+    
+    
+    
 axes(hax8)
-bar([GSRbreakMuHu GSRbreakMuAn GSRbreakMuMi]); hold on;
-errorbar([GSRbreakMuHu GSRbreakMuAn GSRbreakMuMi],[GSRbreakSE GSRbreakSE GSRbreakSE],...
-    'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+bar(Block(2).TFbars); 
 
-title('ITI: ClipEnd to Break Per Trial')
-% axis tight
+hax8.XTickLabel = {'Human', 'Animal', 'Other'};
+legend('Foil','Target','Location','northeast')
+title(['GSR in Block-2 Clips Foil vs Target (SUB: ' filenamebase ')'],'Interpreter','none')
+hold on
 
-
-
-
-bardata = [GSRbaseMuHu GSRbaseMuAn GSRbaseMuMi;...
-           GSRclipMuHu GSRclipMuAn GSRclipMuMi;...
-           GSRbreakMuHu GSRbreakMuAn GSRbreakMuMi];
-
-figure       
-bar(bardata)
-% plot(hax8, GSRendclipbreakavg, 'LineWidth',2,'Marker','none'); 
-title('Human(Blue) Animal(Green) Misc(Yellow)')
-axis tight
+% errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
+%          Block(2).TFbars,...
+%          Block(2).GSRbarsSe,...
+%         'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')    
 
 
-pause(2)
+
+
+
+
 
 
 
 
 
 %%
-
+keyboard
 
 
 GSRbasePeak = [];
@@ -605,8 +655,8 @@ GSRbaseMean = [];
 GSRclipPeak = [];
 GSRclipMean = [];
 
-GSRbreakPeak = [];
-GSRbreakMean = [];
+GSRitiPeak = [];
+GSRitiMean = [];
 
 GSRpctChange = [];
 
@@ -626,11 +676,11 @@ for n = 1:ntrials
     GSRclipMean(n) = mean(GSRclip);
 
 
-    GSRbreak = GSR(  round((EndClipB1{n,1}*sps))  :  round((EndTrialB1{n,1}*sps))  );
+    GSRiti = GSR(  round((EndClipB1{n,1}*sps))  :  round((EndTrialB1{n,1}*sps))  );
 
-    GSRbreakPeak(n) = max(GSRbreak) - min(GSRbreak);
+    GSRitiPeak(n) = max(GSRiti) - min(GSRiti);
     
-    GSRbreakMean(n) = mean(GSRbreakPeak);
+    GSRitiMean(n) = mean(GSRitiPeak);
     
     
 
@@ -673,9 +723,9 @@ title('PLAYING: ClipStart to ClipEnd Per Trial')
 axis tight
 
 axes(hax8)
-bar(GSRbreakMean)
-% plot(hax8, GSRendclipbreakavg, 'LineWidth',2,'Marker','none'); 
-title('ITI: ClipEnd to Break Per Trial')
+bar(GSRitiMean)
+% plot(hax8, GSRendclipitiavg, 'LineWidth',2,'Marker','none'); 
+title('ITI: ClipEnd to iti Per Trial')
 axis tight
 
 
