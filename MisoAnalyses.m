@@ -498,9 +498,12 @@ end
     Block(b).GSRitiMean   = GSRitiMean;
     Block(b).GSRitiSEM    = GSRitiSEM;
     
-    Block(b).GSRpctChange = GSRpctChange;
+    Block(b).GSRdF        = GSRpctChange;
         
 end
+
+
+
 
 
 %% ------------------------------------------------------------------------
@@ -518,10 +521,6 @@ Block(b).GSRitiMuHu = mean(Block(b).GSRitiMean(Block(b).Humn));
 Block(b).GSRitiMuAn = mean(Block(b).GSRitiMean(Block(b).Anim));
 Block(b).GSRitiMuMi = mean(Block(b).GSRitiMean(Block(b).Misc));
 
-Block(b).GSRpctChHu = mean(Block(b).GSRpctChange(Block(b).Humn));
-Block(b).GSRpctChAn = mean(Block(b).GSRpctChange(Block(b).Anim));
-Block(b).GSRpctChMi = mean(Block(b).GSRpctChange(Block(b).Misc));
-
 
 Block(b).GSRbaseSE = std(Block(b).GSRbaseMean) ./ sqrt(numel(Block(b).GSRbaseMean));
 Block(b).GSRclipSE = std(Block(b).GSRclipMean) ./ sqrt(numel(Block(b).GSRclipMean));
@@ -537,7 +536,10 @@ Block(b).GSRbarsSe = [Block(b).GSRbaseSE Block(b).GSRclipSE Block(1).GSRitiSE;..
                       Block(b).GSRclipSE Block(b).GSRclipSE Block(1).GSRclipSE;...
                       Block(b).GSRitiSE  Block(b).GSRitiSE  Block(1).GSRitiSE];                
 
-                
+
+                  
+                  
+     
                 
 
 
@@ -550,10 +552,24 @@ Block(b).GSRclipMuAnTF1 = mean(Block(b).GSRclipMean(Block(b).AnimTarg));
 Block(b).GSRclipMuMiTF1 = mean(Block(b).GSRclipMean(Block(b).MiscTarg));
 
 
-Block(b).TFbars = [Block(b).GSRclipMuHuTF0 Block(b).GSRclipMuHuTF1;...
-                   Block(b).GSRclipMuAnTF0 Block(b).GSRclipMuAnTF1;...
-                   Block(b).GSRclipMuMiTF0 Block(b).GSRclipMuMiTF1];
+Block(b).GSRclipSeHuTF0 = std(Block(b).GSRclipMean(Block(b).HumnFoil)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).HumnFoil) ));
+Block(b).GSRclipSeAnTF0 = std(Block(b).GSRclipMean(Block(b).AnimFoil)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).AnimFoil) ));
+Block(b).GSRclipSeMiTF0 = std(Block(b).GSRclipMean(Block(b).MiscFoil)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).MiscFoil) ));
 
+Block(b).GSRclipSeHuTF1 = std(Block(b).GSRclipMean(Block(b).HumnTarg)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).HumnTarg) ));
+Block(b).GSRclipSeAnTF1 = std(Block(b).GSRclipMean(Block(b).AnimTarg)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).AnimTarg) ));
+Block(b).GSRclipSeMiTF1 = std(Block(b).GSRclipMean(Block(b).MiscTarg)) ./ sqrt(numel( Block(b).GSRclipMean(Block(b).MiscTarg) ));
+
+
+
+
+Block(b).GSRclipHAMFT_MEAN = [Block(b).GSRclipMuHuTF0 Block(b).GSRclipMuHuTF1;...
+                              Block(b).GSRclipMuAnTF0 Block(b).GSRclipMuAnTF1;...
+                              Block(b).GSRclipMuMiTF0 Block(b).GSRclipMuMiTF1];
+
+Block(b).GSRclipHAMFT_SEM = [Block(b).GSRclipSeHuTF0 Block(b).GSRclipSeHuTF1;...
+                             Block(b).GSRclipSeAnTF0 Block(b).GSRclipSeAnTF1;...
+                             Block(b).GSRclipSeMiTF0 Block(b).GSRclipSeMiTF1];               
 
 end
 
@@ -563,7 +579,7 @@ end
 
 close all
 
-fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
+fh4=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
 hax5 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
 hax6 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
 hax7 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
@@ -616,222 +632,137 @@ errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
         'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
     
     
-    
-    
-    
-    
-    
+
     
 axes(hax8)
-bar(Block(2).TFbars); 
+bar(Block(2).GSRclipHAMFT_MEAN); 
 
 hax8.XTickLabel = {'Human', 'Animal', 'Other'};
 legend('Foil','Target','Location','northeast')
 title(['GSR in Block-2 Clips Foil vs Target (SUB: ' filenamebase ')'],'Interpreter','none')
 hold on
 
-% errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
-%          Block(2).TFbars,...
-%          Block(2).GSRbarsSe,...
-%         'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')    
+errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
+         Block(2).GSRclipHAMFT_MEAN,...
+         Block(2).GSRclipHAMFT_SEM,...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')    
+
+
+
+cd(misofigspath);
+set(fh4, 'PaperPositionMode', 'auto');
+saveas(fh4,['GSR_by_Block_' filenamebase],'png');
+cd(mainmisopath);
+
+
+
+%% ------------------------------------------------------------------------
+
+for b = 1:3
+
+Block(b).GSRdFMuHu = mean(Block(b).GSRdF(Block(b).Humn));
+Block(b).GSRdFMuAn = mean(Block(b).GSRdF(Block(b).Anim));
+Block(b).GSRdFMuMi = mean(Block(b).GSRdF(Block(b).Misc));
+
+Block(b).GSRdFSeHu = std(Block(b).GSRdF(Block(b).Humn)) ./ sqrt(numel(Block(b).GSRdF(Block(b).Humn)));
+Block(b).GSRdFSeAn = std(Block(b).GSRdF(Block(b).Anim)) ./ sqrt(numel(Block(b).GSRdF(Block(b).Anim)));
+Block(b).GSRdFSeMi = std(Block(b).GSRdF(Block(b).Misc)) ./ sqrt(numel(Block(b).GSRdF(Block(b).Misc)));
+
+
+
+Block(b).GSRdFMuHuTF0 = mean(Block(b).GSRdF(Block(b).HumnFoil));
+Block(b).GSRdFMuAnTF0 = mean(Block(b).GSRdF(Block(b).AnimFoil));
+Block(b).GSRdFMuMiTF0 = mean(Block(b).GSRdF(Block(b).MiscFoil));
+
+Block(b).GSRdFMuHuTF1 = mean(Block(b).GSRdF(Block(b).HumnTarg));
+Block(b).GSRdFMuAnTF1 = mean(Block(b).GSRdF(Block(b).AnimTarg));
+Block(b).GSRdFMuMiTF1 = mean(Block(b).GSRdF(Block(b).MiscTarg));
+
+
+Block(b).GSRdFSeHuTF0 = std(Block(b).GSRdF(Block(b).HumnFoil)) ./ sqrt(numel(Block(b).GSRdF(Block(b).HumnFoil)));
+Block(b).GSRdFSeAnTF0 = std(Block(b).GSRdF(Block(b).AnimFoil)) ./ sqrt(numel(Block(b).GSRdF(Block(b).AnimFoil)));
+Block(b).GSRdFSeMiTF0 = std(Block(b).GSRdF(Block(b).MiscFoil)) ./ sqrt(numel(Block(b).GSRdF(Block(b).MiscFoil)));
+
+Block(b).GSRdFSeHuTF1 = std(Block(b).GSRdF(Block(b).HumnTarg)) ./ sqrt(numel(Block(b).GSRdF(Block(b).HumnTarg)));
+Block(b).GSRdFSeAnTF1 = std(Block(b).GSRdF(Block(b).AnimTarg)) ./ sqrt(numel(Block(b).GSRdF(Block(b).AnimTarg)));
+Block(b).GSRdFSeMiTF1 = std(Block(b).GSRdF(Block(b).MiscTarg)) ./ sqrt(numel(Block(b).GSRdF(Block(b).MiscTarg)));
 
 
 
 
+Block(b).GSRdFHAM_MEAN   = [Block(b).GSRdFMuHu Block(b).GSRdFMuAn Block(b).GSRdFMuMi];
+
+Block(b).GSRdFHAM_SEM    = [Block(b).GSRdFSeHu Block(b).GSRdFSeAn Block(b).GSRdFSeMi];
 
 
 
+Block(b).GSRdFHAMFT_MEAN = [Block(b).GSRdFMuHuTF0 Block(b).GSRdFMuAnTF0 Block(b).GSRdFMuMiTF0;...
+                            Block(b).GSRdFMuHuTF1 Block(b).GSRdFMuAnTF1 Block(b).GSRdFMuMiTF1];
 
+Block(b).GSRdFHAMFT_SEM    = [Block(b).GSRdFSeHuTF0 Block(b).GSRdFSeAnTF0 Block(b).GSRdFSeMiTF0;...
+                              Block(b).GSRdFSeHuTF1 Block(b).GSRdFSeAnTF1 Block(b).GSRdFSeMiTF1];             
 
-
-
-%%
-keyboard
-
-
-GSRbasePeak = [];
-GSRbaseMean = [];
-
-GSRclipPeak = [];
-GSRclipMean = [];
-
-GSRitiPeak = [];
-GSRitiMean = [];
-
-GSRpctChange = [];
-
-for n = 1:ntrials
-    
-    GSRbase = GSR(  round(StartTrialB1{n,1}*sps) : round(StartClipB1{n,1}*sps)  );
-
-    GSRbasePeak(n) = max(GSRbase) - min(GSRbase);
-
-    GSRbaseMean(n) = mean(GSRbase);
-
-
-    GSRclip = GSR(  round((StartClipB1{n,1}*sps))  :  round((EndClipB1{n,1}*sps))  );
-
-    GSRclipPeak(n) = max(GSRclip) - min(GSRclip);
-
-    GSRclipMean(n) = mean(GSRclip);
-
-
-    GSRiti = GSR(  round((EndClipB1{n,1}*sps))  :  round((EndTrialB1{n,1}*sps))  );
-
-    GSRitiPeak(n) = max(GSRiti) - min(GSRiti);
-    
-    GSRitiMean(n) = mean(GSRitiPeak);
-    
-    
-
-    GSRpctChange(n) = ((GSRclipMean(n) - GSRbaseMean(n)) / (GSRbaseMean(n)));
 
 
 end
 
-GSRpctChangeUPct = prctile(GSRpctChange,95);
-GSRpctChangeLPct = prctile(GSRpctChange,5);
-GSRpctChange(GSRpctChange>GSRpctChangeUPct) = GSRpctChangeUPct;
-GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
+
+%% ------------------------------------------------------------------------
 
 
-%%
 close all
 
-fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
-hax5 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
-hax6 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
-hax7 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
-hax8 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
-
-axes(hax5)
-bar(GSRpctChange)
-% plot(hax5, GSRpercentchange, 'LineWidth',2,'Marker','none'); 
-title('GSR Fold Change Per Trial')
-axis tight
-
-axes(hax6)
-bar(GSRbaseMean)
-% plot(hax6, GSRbaselineavg, 'LineWidth',2,'Marker','none'); 
-title('BASELINE: TrialStart to ClipStart Per Trial')
-axis tight
-
-axes(hax7)
-bar(GSRclipMean)
-% plot(hax7, GSRclipavg, 'LineWidth',2,'Marker','none');
-title('PLAYING: ClipStart to ClipEnd Per Trial')
-axis tight
-
-axes(hax8)
-bar(GSRitiMean)
-% plot(hax8, GSRendclipitiavg, 'LineWidth',2,'Marker','none'); 
-title('ITI: ClipEnd to iti Per Trial')
-axis tight
+fh5=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
+hax1 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
+hax2 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
+hax3 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
+hax4 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
 
 
 
+axes(hax1)
+% bar(Block(1).GSRdFHAM_MEAN); 
+bar(reshape([Block(1:3).GSRdFHAM_MEAN],[3,3])'); 
 
-%%
-
-
-TT = repmat(HumanAnimalNonB1',5,1);
-SR = repmat(RatingB1',5,1);
-
-
-axGRID5 = axes('Position',[.05 .05 .42 .42],'Color','none'); axis off; hold on;
-axGRID6 = axes('Position',[.52 .05 .42 .42],'Color','none'); axis off; hold on;
-axGRID7 = axes('Position',[.05 .52 .42 .42],'Color','none'); axis off; hold on;
-axGRID8 = axes('Position',[.52 .52 .42 .42],'Color','none'); axis off; hold on;
+hax1.XTickLabel = {'Block-1 Audio', 'Block-2 Context', 'Block-3 Video'};
+legend('Human','Animal','Other','Location','northeast')
+title(['Normalized GSR Change in Block-1   (' filenamebase ')'],'Interpreter','none')
+hold on
 
 
-map = [1 0 0;
-       0 1 0;
-       0 0 1];
-
-axes(axGRID5)
-colormap(axGRID5,map)
-phR = imagesc(TT,'Parent',axGRID5,...
-      'CDataMapping','scaled','AlphaData',0.4);
-axis tight;
+errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22],...
+         reshape([Block(1:3).GSRdFHAM_MEAN],[3,3])',...
+         reshape([Block(1:3).GSRdFHAM_SEM],[3,3])',...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
 
 
-axes(axGRID6)
-colormap(axGRID6,map)
-phR = imagesc(TT,'Parent',axGRID6,...
-      'CDataMapping','scaled','AlphaData',0.4);
-axis tight;
+    
+    
+    
+    
+axes(hax2)
+bar([Block(2).GSRdFHAMFT_MEAN]'); 
+
+hax2.XTickLabel = {'Human', 'Animal', 'Other'};
+legend('Foil','Target','Location','northeast')
+title(['Normalized GSR Change in Block-2 Foils vs Targets   (' filenamebase ')'],'Interpreter','none')
+hold on
 
 
-axes(axGRID7)
-colormap(axGRID7,map)
-phR = imagesc(TT,'Parent',axGRID7,...
-      'CDataMapping','scaled','AlphaData',0.4);
-axis tight;
-
-
-axes(axGRID8)
-colormap(axGRID8,map)
-phR = imagesc(TT,'Parent',axGRID8,...
-      'CDataMapping','scaled','AlphaData',0.4);
-axis tight;
-
-
-%%
+errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
+         [Block(2).GSRdFHAMFT_MEAN]',...
+         [Block(2).GSRdFHAMFT_SEM]',...
+        'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','none')
 
 
 
 
+cd(misofigspath);
+set(fh5, 'PaperPositionMode', 'auto');
+saveas(fh5,['GSR_dF_' filenamebase],'png');
+cd(mainmisopath);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-
-
-
-testSubjectTrials = [];
-testSubjectTrialsGSR = [];
-
-startTrialMatrix = round(sps*table2array(StartTrialB1));
-endTrialMatrix = startTrialMatrix+sps*20;
-testSubject = SubDataB1(:,1);
-testSubjectGSR = SubDataB1(:,3);
-
-
-for i=1:ntrials
-    testSubjectTrials(i,:)=smooth(abs(testSubject(startTrialMatrix(i):endTrialMatrix(i))),1000);
-end
-
-for i=1:ntrials
-    testSubjectTrialsGSR(i,:)=smooth(zscore(testSubjectGSR(startTrialMatrix(i):endTrialMatrix(i))),100);
-end
-x = 0:(20/40000):20;
-
-
-fh3=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
-hax9 = axes('Position',[.05 .05 .9 .9],'Color','none'); 
-
-axes(hax9)
-plot(x,testSubjectTrialsGSR(1:end,:))
-axis tight
-legend('show')
-
-
+%% ------------------------------------------------------------------------
+%% ------------------------------------------------------------------------
+%% ------------------------------------------------------------------------

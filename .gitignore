@@ -9,6 +9,7 @@ misodata/*
 Video36/*
 Audio36/*
 SubFiles/*
+misofigs/*
 
 # Executables
 *.m~
