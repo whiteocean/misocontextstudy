@@ -3,21 +3,22 @@
 clc; close all; clear;
 
 
-global thisfilepath
+global mainmisopath
 thisfile = 'MisoAnalyses.m';
-thisfilepath = fileparts(which(thisfile));
-cd(thisfilepath);
+mainmisopath = fileparts(which(thisfile));
+cd(mainmisopath);
 
-fprintf('\n\n Current working path set to: \n % s \n', thisfilepath)
+fprintf('\n\n Current working path set to: \n % s \n', mainmisopath)
 
     
-pathdir0 = thisfilepath;
-pathdir1 = [thisfilepath '/SubFiles'];
-gpath = [pathdir0 ':' pathdir1];
+
+subfilespath = [mainmisopath '/SubFiles'];
+misofigspath = [mainmisopath '/misofigs'];
+gpath = [mainmisopath ':' subfilespath ':' misofigspath];
 addpath(gpath)
 
-fprintf('\n\n Added folders to path: \n % s \n % s \n\n',...
-        pathdir0,pathdir1)
+fprintf('\n\n Added folders to path: \n % s \n % s \n % s \n\n',...
+        mainmisopath,subfilespath,misofigspath)
 
 
 
@@ -50,7 +51,7 @@ block3acq = acq;
 
 
 clear acq;
-clear thisfile pathdir0 pathdir1 gpath datafile datapath thisfilepath
+clear thisfile gpath datafile datapath
 clear block1physiopath block2physiopath block3physiopath
 clear block1timingpath block2timingpath block3timingpath
 
@@ -70,7 +71,11 @@ clear block1timingpath block2timingpath block3timingpath
 %     RATEDxlsN = RATEDxlsN(2:end,:);
 % end
 
-SubDataB1 = block1acq.data;
+
+
+
+% We don't need acq struct for anything other than .data
+SubDataB1 = block1acq.data; 
 SubDataB2 = block2acq.data;
 SubDataB3 = block3acq.data;
 
@@ -80,45 +85,119 @@ B2tN(1,1) = 1; %makes the first cell value = to 1
 B3tN(1,1) = 1; %makes the first cell value = to 1
 
 
-StartTrial = B1tN(:,1);
-StartClip = B1tN(:,2);
-EndClip = B1tN(:,3);
-EndTrial = B1tN(:,4);
+StartTrialB1 = B1tN(:,1);
+StartClipB1 = B1tN(:,2);
+EndClipB1 = B1tN(:,3);
+EndTrialB1 = B1tN(:,4);
 
-ntrials = size(B1tN,1);
+StartTrialB2 = B2tN(:,1);
+StartClipB2 = B2tN(:,2);
+EndClipB2 = B2tN(:,3);
+EndTrialB2 = B2tN(:,4);
 
+StartTrialB3 = B3tN(:,1);
+StartClipB3 = B3tN(:,2);
+EndClipB3 = B3tN(:,3);
+EndTrialB3 = B3tN(:,4);
 
+HumanAnimalNonB1 = B1tN(:,6);
+HumanAnimalNonB2 = B2tN(:,6);
+HumanAnimalNonB3 = B3tN(:,6);
 
-HumanAnimalNon = B1tN(:,6);
+RatingB1 = B1tN(:,7);
+RatingB2 = B2tN(:,7);
+RatingB3 = B3tN(:,7);
 
-Rating = B1tN(:,7);
+ContMisoB1 = B1tN(:,8);
+ContMisoB2 = B2tN(:,8);
+ContMisoB3 = B3tN(:,8);
 
 FoilTarget = B2tN(:,10);
 
+% -------------------------------------------------
 
 
-sps = 2000;
-musz = 20;
-BlockNum = 1;
+Block(1).SubData    = SubDataB1;
+Block(1).ARM        = SubDataB1(:,1);
+Block(1).NEK        = SubDataB1(:,2);
+Block(1).GSR        = SubDataB1(:,3);
+Block(1).HRT        = SubDataB1(:,4);
+Block(1).StartTrial = StartTrialB1;
+Block(1).StartClip  = StartClipB1;
+Block(1).EndClip    = EndClipB1;
+Block(1).EndTrial   = EndTrialB1;
+Block(1).HumanAnimalNon = HumanAnimalNonB1;
+Block(1).Rating     = RatingB1;
+Block(1).ContMiso   = ContMisoB1;
+Block(1).FoilTarget = FoilTarget;
+Block(1).Humn       = [];
+Block(1).Anim       = [];
+Block(1).Misc       = [];
+Block(1).Foil       = [];
+Block(1).Targ       = [];
+Block(1).HumnFoil   = [];
+Block(1).AnimFoil   = [];
+Block(1).MiscFoil   = [];
+Block(1).HumnTarg   = [];
+Block(1).AnimTarg   = [];
+Block(1).MiscTarg   = [];
+Block(1).ARMmu      = [];
+Block(1).NEKmu      = [];
+Block(1).GSRmu      = [];
+Block(1).HRTmu      = [];
+Block(1).RatingMu   = [];
+Block(1).RatingSe   = [];
+
+Block(2).SubData = SubDataB2;
+Block(2).ARM = SubDataB2(:,1);
+Block(2).NEK = SubDataB2(:,2);
+Block(2).GSR = SubDataB2(:,3);
+Block(2).HRT = SubDataB2(:,4);
+Block(2).StartTrial = StartTrialB2;
+Block(2).StartClip = StartClipB2;
+Block(2).EndClip = EndClipB2;
+Block(2).EndTrial = EndTrialB2;
+Block(2).HumanAnimalNon = HumanAnimalNonB2;
+Block(2).Rating = RatingB2;
+Block(2).ContMiso = ContMisoB2;
+Block(2).FoilTarget = FoilTarget;
+
+Block(3).SubData = SubDataB3;
+Block(3).ARM = SubDataB3(:,1);
+Block(3).NEK = SubDataB3(:,2);
+Block(3).GSR = SubDataB3(:,3);
+Block(3).HRT = SubDataB3(:,4);
+Block(3).StartTrial = StartTrialB3;
+Block(3).StartClip = StartClipB3;
+Block(3).EndClip = EndClipB3;
+Block(3).EndTrial = EndTrialB3;
+Block(3).HumanAnimalNon = HumanAnimalNonB3;
+Block(3).Rating = RatingB3;
+Block(3).ContMiso = ContMisoB3;
+Block(3).FoilTarget = FoilTarget;
 
 
-% ------------------------------------------------------------------------
-
-
-ARM = SubDataB1(:,1);
-NEK = SubDataB1(:,2);
-GSR = SubDataB1(:,3);
-HRT = SubDataB1(:,4);
-
-ARM = ARM + abs(mean(ARM));
-NEK = NEK + abs(mean(NEK));
-GSR = GSR + abs(mean(GSR));
-HRT = HRT + abs(mean(HRT));
+clearvars -except Block filenamebase
 
 
 
 
-datsecs = floor(numel(GSR) / musz);
+
+%% ------------------------------------------------------------------------
+
+ntrials = size(Block(1).StartClip,1);
+sps = 2000;  % number of data points per second
+musz = 100;  % number of data points to average together in the physio data
+
+% ARM = ARM + abs(mean(ARM));
+% NEK = NEK + abs(mean(NEK));
+% GSR = GSR + abs(mean(GSR));
+% HRT = HRT + abs(mean(HRT));
+
+
+for b = 1:3
+
+datsecs = floor(numel(Block(b).GSR) / musz);
 
 ARMmu=[];
 NEKmu=[];
@@ -126,22 +205,22 @@ GSRmu=[];
 HRTmu=[];
 for nn = 0:datsecs-1
     
-    ARMmu(nn+1) = mean(ARM(nn*musz+1:nn*musz+musz));
-    NEKmu(nn+1) = mean(NEK(nn*musz+1:nn*musz+musz));
-    GSRmu(nn+1) = mean(GSR(nn*musz+1:nn*musz+musz));
-    HRTmu(nn+1) = mean(HRT(nn*musz+1:nn*musz+musz));
+    ARMmu(nn+1) = mean(Block(b).ARM(nn*musz+1:nn*musz+musz));
+    NEKmu(nn+1) = mean(Block(b).NEK(nn*musz+1:nn*musz+musz));
+    GSRmu(nn+1) = mean(Block(b).GSR(nn*musz+1:nn*musz+musz));
+    HRTmu(nn+1) = mean(Block(b).HRT(nn*musz+1:nn*musz+musz));
     
 end
 
-ARMmuUPct = prctile(ARMmu,99.99);
-NEKmuUPct = prctile(NEKmu,99.99);
-GSRmuUPct = prctile(GSRmu,99.99);
-HRTmuUPct = prctile(HRTmu,99.99);
+ARMmuUPct = prctile(ARMmu,99.90);
+NEKmuUPct = prctile(NEKmu,99.90);
+GSRmuUPct = prctile(GSRmu,99.90);
+HRTmuUPct = prctile(HRTmu,99.90);
 
-ARMmuLPct = prctile(ARMmu,00.01);
-NEKmuLPct = prctile(NEKmu,00.01);
-GSRmuLPct = prctile(GSRmu,00.01);
-HRTmuLPct = prctile(HRTmu,00.01);
+ARMmuLPct = prctile(ARMmu,00.10);
+NEKmuLPct = prctile(NEKmu,00.10);
+GSRmuLPct = prctile(GSRmu,00.10);
+HRTmuLPct = prctile(HRTmu,00.10);
 
 
 ARMmu(ARMmu>ARMmuUPct) = ARMmuUPct;
@@ -156,91 +235,162 @@ HRTmu(HRTmu<HRTmuLPct) = HRTmuLPct;
 
 
 
-ARMmu = ARMmu + abs(min(ARMmu));
-NEKmu = NEKmu + abs(min(NEKmu));
-GSRmu = GSRmu + abs(min(GSRmu));
-HRTmu = HRTmu + abs(min(HRTmu));
+Block(b).ARMmu = ARMmu + abs(min(ARMmu));
+Block(b).NEKmu = NEKmu + abs(min(NEKmu));
+Block(b).GSRmu = GSRmu + abs(min(GSRmu));
+Block(b).HRTmu = HRTmu + abs(min(HRTmu));
+
+
+Block(b).RatingMu = mean(Block(b).Rating);
+Block(b).RatingSe = std(Block(b).Rating) / sqrt(numel(Block(b).Rating));
 
 
 
-% SELF REPORT RATINGS BLOCK 1, 2, 3
 
-SubRatingB1 = B1tN(:,7);
-SubRatingB2 = B2tN(:,7);
-SubRatingB3 = B3tN(:,7);
+[Humn, c, v] = find((Block(b).HumanAnimalNon == 1));
+[Anim, c, v] = find((Block(b).HumanAnimalNon == 2));
+[Misc, c, v] = find((Block(b).HumanAnimalNon == 3));
 
+[Foil, c, v] = find((Block(b).FoilTarget == 0));
+[Targ, c, v] = find((Block(b).FoilTarget == 1));
 
-% HumanAnimalNon = B1tN(:,6);
-% HumanAnimalNon = B1tN(:,6);
-% HumanAnimalNon = B1tN(:,6);
-
-TrialTypeB1 = B1tN(:,6);
-TrialTypeB2 = B2tN(:,6);
-TrialTypeB3 = B3tN(:,6);
-
-
-
-SubRatingB1mu = mean(SubRatingB1)
-SubRatingB2mu = mean(SubRatingB2)
-SubRatingB3mu = mean(SubRatingB3)
-SubRatingB1se = std(SubRatingB1) / sqrt(numel(SubRatingB1))
-SubRatingB2se = std(SubRatingB2) / sqrt(numel(SubRatingB2))
-SubRatingB3se = std(SubRatingB3) / sqrt(numel(SubRatingB3))
+HumnFoil = intersect(Foil,Humn);
+AnimFoil = intersect(Foil,Anim);
+MiscFoil = intersect(Foil,Misc);
+HumnTarg = intersect(Targ,Humn);
+AnimTarg = intersect(Targ,Anim);
+MiscTarg = intersect(Targ,Misc);
 
 
+Block(b).Humn = Humn;
+Block(b).Anim = Anim;
+Block(b).Misc = Misc;
+Block(b).Foil = Foil;
+Block(b).Targ = Targ;
 
-[TThumn, c, v] = find((HumanAnimalNon == 1));
-[TTanim, c, v] = find((HumanAnimalNon == 2));
-[TTmisc, c, v] = find((HumanAnimalNon == 3));
-
-[TF0, c, v] = find((FoilTarget == 0));
-[TF1, c, v] = find((FoilTarget == 1));
-
-TThumnTF0 = intersect(TF0,TThumn);
-TTanimTF0 = intersect(TF0,TTanim);
-TTmiscTF0 = intersect(TF0,TTmisc);
-TThumnTF1 = intersect(TF1,TThumn);
-TTanimTF1 = intersect(TF1,TTanim);
-TTmiscTF1 = intersect(TF1,TTmisc);
+Block(b).HumnFoil = HumnFoil;
+Block(b).AnimFoil = AnimFoil;
+Block(b).MiscFoil = MiscFoil;
+Block(b).HumnTarg = HumnTarg;
+Block(b).AnimTarg = AnimTarg;
+Block(b).MiscTarg = MiscTarg;
 
 
+end
+
+
+
+
+
+%% --------- PLOT Self-Report Ratings in Auditory, Informed, Visual Blocks --------
+clearvars -except Block filenamebase
 close all
-
-% fh2=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
-% hax5 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
-% hax6 = axes('Position',[.52 .05 .42 .42],'Color','none'); 
-% hax7 = axes('Position',[.05 .52 .42 .42],'Color','none'); 
-% hax8 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
-
-
 
 fh2=figure('Units','normalized','OuterPosition',[.05 .05 .5 .7],'Color','w','MenuBar','none');
 hax5 = axes('Position',[.05 .05 .9 .9],'Color','none'); 
 
 axes(hax5)
-bar([SubRatingB1mu SubRatingB2mu SubRatingB3mu]); hold on;
-errorbar([SubRatingB1mu SubRatingB2mu SubRatingB3mu],[SubRatingB1se SubRatingB2se SubRatingB3se],...
-    'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
-title([filenamebase ' Self-Report Ratings in Auditory, Informed, Visual Blocks'],'Interpreter','none')
+bar([Block(1).RatingMu Block(2).RatingMu Block(3).RatingMu]); hold on;
+errorbar([Block(1).RatingMu Block(2).RatingMu Block(3).RatingMu],...
+         [Block(1).RatingSe Block(2).RatingSe Block(3).RatingSe],...
+         'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+title(['Self-Report Ratings in Auditory, Informed, Visual Blocks (SUB: ' filenamebase ')'],'Interpreter','none')
 hax5.YLim = [0 10];
-
 pause(2)
-
 % axis tight
 
 
-% axes(hax6)
-% bar([GSRbaseMuHu GSRbaseMuAn GSRbaseMuMi]); hold on;
-% errorbar([GSRbaseMuHu GSRbaseMuAn GSRbaseMuMi],[GSRbaseSE GSRbaseSE GSRbaseSE],...
-%     'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
-% 
-% title('BASELINE: TrialStart to ClipStart Per Trial')
-% % axis tight
-% 
-% axes(hax7)
-% bar([GSRclipMuHu GSRclipMuAn GSRclipMuMi]); hold on;
-% errorbar([GSRclipMuHu GSRclipMuAn GSRclipMuMi],[GSRclipSE GSRclipSE GSRclipSE],...
-%     'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+
+
+
+%% --------------  GET RATINGS FOR HUMAN ANIMAL MISC/OTHER -----------------
+
+
+for b = 1:3
+
+    RatingMuHumn(b) = mean(Block(b).Rating(Block(b).Humn));
+    RatingMuAnim(b) = mean(Block(b).Rating(Block(b).Anim));
+    RatingMuMisc(b) = mean(Block(b).Rating(Block(b).Misc));
+    
+    RatingSeHumn(b) = std(Block(b).Rating(Block(b).Humn)) ./ sqrt(numel(Block(b).Rating(Block(b).Humn)));
+    RatingSeAnim(b) = std(Block(b).Rating(Block(b).Anim)) ./ sqrt(numel(Block(b).Rating(Block(b).Anim)));
+    RatingSeMisc(b) = std(Block(b).Rating(Block(b).Misc)) ./ sqrt(numel(Block(b).Rating(Block(b).Misc)));
+
+end
+
+
+%% -----------  GET SELF-REPORT RATINGS FOR BLOCK-2 FOIL VS TARGET --------------
+
+
+RatingMuHumnFoil = mean(Block(2).Rating(Block(2).HumnFoil));
+RatingMuAnimFoil = mean(Block(2).Rating(Block(2).AnimFoil));
+RatingMuMiscFoil = mean(Block(2).Rating(Block(2).MiscFoil));
+
+RatingMuHumnTarg = mean(Block(2).Rating(Block(2).HumnTarg));
+RatingMuAnimTarg = mean(Block(2).Rating(Block(2).AnimTarg));
+RatingMuMiscTarg = mean(Block(2).Rating(Block(2).MiscTarg));
+
+RatingSeHumnFoil = std(Block(2).Rating(Block(2).HumnFoil)) / sqrt(numel(Block(2).Rating(Block(2).HumnFoil)));
+RatingSeAnimFoil = std(Block(2).Rating(Block(2).AnimFoil)) / sqrt(numel(Block(2).Rating(Block(2).AnimFoil)));
+RatingSeMiscFoil = std(Block(2).Rating(Block(2).MiscFoil)) / sqrt(numel(Block(2).Rating(Block(2).MiscFoil)));
+
+RatingSeHumnTarg = std(Block(2).Rating(Block(2).HumnTarg)) / sqrt(numel(Block(2).Rating(Block(2).HumnTarg)));
+RatingSeAnimTarg = std(Block(2).Rating(Block(2).AnimTarg)) / sqrt(numel(Block(2).Rating(Block(2).AnimTarg)));
+RatingSeMiscTarg = std(Block(2).Rating(Block(2).MiscTarg)) / sqrt(numel(Block(2).Rating(Block(2).MiscTarg)));
+
+
+RatingFTMu = [RatingMuHumnFoil RatingMuHumnTarg;...
+              RatingMuAnimFoil RatingMuAnimTarg;...
+              RatingMuMiscFoil RatingMuMiscTarg];
+
+RatingFTSe = [RatingSeHumnFoil RatingSeHumnTarg;...
+              RatingSeAnimFoil RatingSeAnimTarg;...
+              RatingSeMiscFoil RatingSeMiscTarg]; 
+
+
+
+%% --------- PLOT SELF-REPORT RATINGS FOR HUMAN ANIMAL MISC & FOIL TARGET ----------
+
+fh3=figure('Units','normalized','OuterPosition',[.05 .05 .8 .7],'Color','w','MenuBar','none');
+hax6a = axes('Position',[.05 .05 .4 .9],'Color','none');
+hax6b = axes('Position',[.51 .05 .4 .9],'Color','none'); 
+
+axes(hax6a)
+bh1 = bar([RatingMuHumn' RatingMuAnim' RatingMuMisc']); 
+
+legend('Human','Animal','Other','Location','northwest')
+
+hold on;
+
+errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
+         [RatingMuHumn' RatingMuAnim' RatingMuMisc'],...
+         [RatingSeHumn' RatingSeAnim' RatingSeMisc'],...
+         'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2,...
+         'Marker','.', 'MarkerSize',20)
+     
+title(['Self-Report Ratings in Auditory, Informed, Visual Blocks (SUB: ' filenamebase ')'],'Interpreter','none')
+hax6a.YLim = [1 10];
+
+pause(1)
+
+
+axes(hax6b)
+bh1 = bar(RatingFTMu); 
+
+legend('Foil','Target','Location','northwest')
+
+hold on;
+
+errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], RatingFTMu,...
+         RatingFTSe,...
+    'Color', [.2 0 .6], 'LineStyle','none','LineWidth',2, 'Marker','.', 'MarkerSize',20)
+title([filenamebase ' Self-Report Ratings in Informed Block(2) Compairing Foil vs Target'],'Interpreter','none')
+hax6b.YLim = [1 10];
+
+cd(misofigspath);
+set(fh3, 'PaperPositionMode', 'auto');
+saveas(fh3,['Self_Report_Ratings_by_Block_' filenamebase],'png');
+cd(mainmisopath);
 
 
 
@@ -248,11 +398,12 @@ pause(2)
 
 
 
-
-
-% ------------------------------------------------------------------------
+%% ------------------------------------------------------------------------
+keyboard
 
 close all;
+
+b = 1;
 
 fh1=figure('Units','normalized','OuterPosition',[.05 .05 .9 .8],'Color','w','MenuBar','none');
 hax1 = axes('Position',[.05 .05 .42 .42],'Color','none'); 
@@ -261,26 +412,26 @@ hax3 = axes('Position',[.05 .52 .42 .42],'Color','none');
 hax4 = axes('Position',[.52 .52 .42 .42],'Color','none'); 
 
 axes(hax1)
-plot(hax1, ARMmu, 'LineWidth',2,'Marker','none'); title('ARM')
+plot(hax1, Block(b).ARMmu, 'LineWidth',2,'Marker','none'); title('ARM')
 axis tight
 
 axes(hax2)
-plot(hax2, NEKmu, 'LineWidth',2,'Marker','none'); title('NECK')
+plot(hax2, Block(b).NEKmu, 'LineWidth',2,'Marker','none'); title('NECK')
 axis tight
 
 axes(hax3)
-plot(hax3, GSRmu, 'LineWidth',2,'Marker','none'); title('GSR')
+plot(hax3, Block(b).GSRmu, 'LineWidth',2,'Marker','none'); title('GSR')
 axis tight
 
 axes(hax4)
-plot(hax4, HRTmu, 'LineWidth',2,'Marker','none'); title('HEART')
+plot(hax4, Block(b).HRTmu, 'LineWidth',2,'Marker','none'); title('HEART')
 axis tight
 
 
 
 
 
-% ------------------------------------------------------------------------
+%% ------------------------------------------------------------------------
 
 
 
@@ -298,21 +449,25 @@ GSRbreakSEM = [];
 
 GSRpctChange = [];
 
-for n = 1:ntrials
+sps = 2000;
+musz = 20;  % number of data points to average together in the physio data
+
+
+for n = 1:size(Block(1).StartClip,1);
     
-    GSRbase = GSRmu(  round(StartTrial(n)*(sps/musz) ) : round(StartClip(n)*(sps/musz) )  );
+    GSRbase = Block(1).GSRmu(  round(Block(1).StartTrial(n)*(sps/musz) ) : round(Block(1).StartClip(n)*(sps/musz) )  );
     GSRbasePeak(n) = max(GSRbase) - min(GSRbase);
     GSRbaseMean(n) = mean(GSRbase);
     GSRbaseSEM(n) = std(GSRbase) ./ sqrt(numel(GSRbase));
 
 
-    GSRclip = GSRmu(  round((StartClip(n)*(sps/musz) ))  :  round((EndClip(n)*(sps/musz) ))  );
+    GSRclip = Block(1).GSRmu(  round((Block(1).StartClip(n)*(sps/musz) ))  :  round((Block(1).EndClip(n)*(sps/musz) ))  );
     GSRclipPeak(n) = max(GSRclip) - min(GSRclip);
     GSRclipMean(n) = mean(GSRclip);
     GSRclipSEM(n) = std(GSRclip) ./ sqrt(numel(GSRclip));
 
 
-    GSRbreak = GSRmu(  round((EndClip(n)*(sps/musz) ))  :  round((EndTrial(n)*(sps/musz) ))  );
+    GSRbreak = Block(1).GSRmu(  round((Block(1).EndClip(n)*(sps/musz) ))  :  round((Block(1).EndTrial(n)*(sps/musz) ))  );
     GSRbreakPeak(n) = max(GSRbreak) - min(GSRbreak);
     GSRbreakMean(n) = mean(GSRbreakPeak);
     GSRbreakSEM(n) = std(GSRbreak) ./ sqrt(numel(GSRbreak));
@@ -335,45 +490,24 @@ GSRpctChange(GSRpctChange<GSRpctChangeLPct) = GSRpctChangeLPct;
 
 
 
-% ------------------------------------------------------------------------
+%% ------------------------------------------------------------------------
 
 
-[TThumn, c, v] = find((HumanAnimalNon == 1));
-[TTanim, c, v] = find((HumanAnimalNon == 2));
-[TTmisc, c, v] = find((HumanAnimalNon == 3));
+GSRbaseMuHu = mean(GSRbaseMean(Block(1).Humn));
+GSRbaseMuAn = mean(GSRbaseMean(Block(1).Anim));
+GSRbaseMuMi = mean(GSRbaseMean(Block(1).Misc));
 
-[TF0, c, v] = find((FoilTarget == 0));
-[TF1, c, v] = find((FoilTarget == 1));
+GSRclipMuHu = mean(GSRclipMean(Block(1).Humn));
+GSRclipMuAn = mean(GSRclipMean(Block(1).Anim));
+GSRclipMuMi = mean(GSRclipMean(Block(1).Misc));
 
+GSRbreakMuHu = mean(GSRbreakMean(Block(1).Humn));
+GSRbreakMuAn = mean(GSRbreakMean(Block(1).Anim));
+GSRbreakMuMi = mean(GSRbreakMean(Block(1).Misc));
 
-
-
-TThumnTF0 = intersect(TF0,TThumn);
-TTanimTF0 = intersect(TF0,TTanim);
-TTmiscTF0 = intersect(TF0,TTmisc);
-TThumnTF1 = intersect(TF1,TThumn);
-TTanimTF1 = intersect(TF1,TTanim);
-TTmiscTF1 = intersect(TF1,TTmisc);
-
-
-
-
-
-GSRbaseMuHu = mean(GSRbaseMean(TThumn));
-GSRbaseMuAn = mean(GSRbaseMean(TTanim));
-GSRbaseMuMi = mean(GSRbaseMean(TTmisc));
-
-GSRclipMuHu = mean(GSRclipMean(TThumn));
-GSRclipMuAn = mean(GSRclipMean(TTanim));
-GSRclipMuMi = mean(GSRclipMean(TTmisc));
-
-GSRbreakMuHu = mean(GSRbreakMean(TThumn));
-GSRbreakMuAn = mean(GSRbreakMean(TTanim));
-GSRbreakMuMi = mean(GSRbreakMean(TTmisc));
-
-GSRpctChHu = mean(GSRpctChange(TThumn));
-GSRpctChAn = mean(GSRpctChange(TTanim));
-GSRpctChMi = mean(GSRpctChange(TTmisc));
+GSRpctChHu = mean(GSRpctChange(Block(1).Humn));
+GSRpctChAn = mean(GSRpctChange(Block(1).Anim));
+GSRpctChMi = mean(GSRpctChange(Block(1).Misc));
 
 
 GSRbaseSE = std(GSRbaseMean) ./ sqrt(numel(GSRbaseMean));
@@ -384,13 +518,13 @@ GSRbreakSE = std(GSRbreakMean) ./ sqrt(numel(GSRbreakMean));
 
 
 
-GSRclipMuHuTF0 = mean(GSRclipMean(TThumnTF0));
-GSRclipMuAnTF0 = mean(GSRclipMean(TTanimTF0));
-GSRclipMuMiTF0 = mean(GSRclipMean(TTmiscTF0));
+GSRclipMuHuTF0 = mean(GSRclipMean(Block(1).HumnFoil));
+GSRclipMuAnTF0 = mean(GSRclipMean(Block(1).AnimFoil));
+GSRclipMuMiTF0 = mean(GSRclipMean(Block(1).MiscFoil));
 
-GSRclipMuHuTF1 = mean(GSRclipMean(TThumnTF1));
-GSRclipMuAnTF1 = mean(GSRclipMean(TTanimTF1));
-GSRclipMuMiTF1 = mean(GSRclipMean(TTmiscTF1));
+GSRclipMuHuTF1 = mean(GSRclipMean(Block(1).HumnTarg));
+GSRclipMuAnTF1 = mean(GSRclipMean(Block(1).AnimTarg));
+GSRclipMuMiTF1 = mean(GSRclipMean(Block(1).MiscTarg));
 
 
 TFbars = [GSRclipMuHuTF0 GSRclipMuHuTF1;...
@@ -478,21 +612,21 @@ GSRpctChange = [];
 
 for n = 1:ntrials
     
-    GSRbase = GSR(  round(StartTrial{n,1}*sps) : round(StartClip{n,1}*sps)  );
+    GSRbase = GSR(  round(StartTrialB1{n,1}*sps) : round(StartClipB1{n,1}*sps)  );
 
     GSRbasePeak(n) = max(GSRbase) - min(GSRbase);
 
     GSRbaseMean(n) = mean(GSRbase);
 
 
-    GSRclip = GSR(  round((StartClip{n,1}*sps))  :  round((EndClip{n,1}*sps))  );
+    GSRclip = GSR(  round((StartClipB1{n,1}*sps))  :  round((EndClipB1{n,1}*sps))  );
 
     GSRclipPeak(n) = max(GSRclip) - min(GSRclip);
 
     GSRclipMean(n) = mean(GSRclip);
 
 
-    GSRbreak = GSR(  round((EndClip{n,1}*sps))  :  round((EndTrial{n,1}*sps))  );
+    GSRbreak = GSR(  round((EndClipB1{n,1}*sps))  :  round((EndTrialB1{n,1}*sps))  );
 
     GSRbreakPeak(n) = max(GSRbreak) - min(GSRbreak);
     
@@ -550,8 +684,8 @@ axis tight
 %%
 
 
-TT = repmat(HumanAnimalNon',5,1);
-SR = repmat(Rating',5,1);
+TT = repmat(HumanAnimalNonB1',5,1);
+SR = repmat(RatingB1',5,1);
 
 
 axGRID5 = axes('Position',[.05 .05 .42 .42],'Color','none'); axis off; hold on;
@@ -626,7 +760,7 @@ axis tight;
 testSubjectTrials = [];
 testSubjectTrialsGSR = [];
 
-startTrialMatrix = round(sps*table2array(StartTrial));
+startTrialMatrix = round(sps*table2array(StartTrialB1));
 endTrialMatrix = startTrialMatrix+sps*20;
 testSubject = SubDataB1(:,1);
 testSubjectGSR = SubDataB1(:,3);
