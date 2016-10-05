@@ -3,7 +3,7 @@
 clc; close all; clear;
 
 
-global mainmisopath
+global mainmisopath 
 thisfile = 'MisoAnalyses.m';
 mainmisopath = fileparts(which(thisfile));
 cd(mainmisopath);
@@ -179,7 +179,7 @@ Block(3).FoilTarget = FoilTarget;
 
 clearvars -except Block filenamebase mainmisopath misofigspath
 
-
+datatable = struct;
 
 
 
@@ -283,7 +283,7 @@ end
 
 
 %% --------- PLOT Self-Report Ratings in Auditory, Informed, Visual Blocks --------
-clearvars -except Block filenamebase mainmisopath misofigspath
+clearvars -except Block filenamebase mainmisopath misofigspath datatable
 close all
 
 fh2=figure('Units','normalized','OuterPosition',[.05 .05 .5 .7],'Color','w','MenuBar','none');
@@ -300,6 +300,8 @@ pause(2)
 % axis tight
 
 
+datatable.RatingMu = [Block.RatingMu]';
+datatable.RatingSe = [Block.RatingSe]';
 
 
 
@@ -394,6 +396,26 @@ saveas(fh3,['Self_Report_Ratings_by_Block_' filenamebase],'png');
 cd(mainmisopath);
 
 
+
+datatable.RatingMuHumn = RatingMuHumn';
+
+datatable.RatingMuAnim = RatingMuAnim';
+
+datatable.RatingMuMisc = RatingMuMisc';
+
+datatable.RatingSeHumn = RatingSeHumn';
+
+datatable.RatingSeAnim = RatingSeAnim';
+
+datatable.RatingSeMisc = RatingSeMisc';
+
+
+
+datatable.RatingMuHAMF = [RatingMuHumnFoil RatingMuAnimFoil RatingMuMiscFoil]';
+datatable.RatingMuHAMT = [RatingMuHumnTarg RatingMuAnimTarg RatingMuMiscTarg]';
+
+datatable.RatingSeHAMF = [RatingSeHumnFoil RatingSeAnimFoil RatingSeMiscFoil]';
+datatable.RatingSeHAMT = [RatingSeHumnTarg RatingSeAnimTarg RatingSeMiscTarg]';
 
 
 
@@ -656,6 +678,9 @@ cd(mainmisopath);
 
 
 
+
+
+
 %% ------------------------------------------------------------------------
 
 for b = 1:3
@@ -760,6 +785,39 @@ errorbar([1-.15 1+.15; 2-.15 2+.15; 3-.15 3+.15], ...
 cd(misofigspath);
 set(fh5, 'PaperPositionMode', 'auto');
 saveas(fh5,['GSR_dF_' filenamebase],'png');
+cd(mainmisopath);
+
+
+
+
+Block(b).GSRdFHAMFT_MEAN = [Block(b).GSRdFMuHuTF0 Block(b).GSRdFMuAnTF0 Block(b).GSRdFMuMiTF0;...
+                            Block(b).GSRdFMuHuTF1 Block(b).GSRdFMuAnTF1 Block(b).GSRdFMuMiTF1];
+
+Block(b).GSRdFHAMFT_SEM    = [Block(b).GSRdFSeHuTF0 Block(b).GSRdFSeAnTF0 Block(b).GSRdFSeMiTF0;...
+                              Block(b).GSRdFSeHuTF1 Block(b).GSRdFSeAnTF1 Block(b).GSRdFSeMiTF1];  
+
+datatable.GSRdfMuHu = [Block(1:3).GSRdFMuHu]';
+datatable.GSRdfMuAn = [Block(1:3).GSRdFMuAn]';
+datatable.GSRdfMuMi = [Block(1:3).GSRdFMuMi]';
+
+datatable.GSRdfSeHu = [Block(1:3).GSRdFSeHu]';
+datatable.GSRdfSeAn = [Block(1:3).GSRdFSeAn]';
+datatable.GSRdfSeMi = [Block(1:3).GSRdFSeMi]';
+
+
+datatable.GSRB2dfMuHuAnMiF = [Block(2).GSRdFMuHuTF0 Block(2).GSRdFMuAnTF0 Block(2).GSRdFMuMiTF0]';
+datatable.GSRB2dfMuHuAnMiT = [Block(2).GSRdFMuHuTF1 Block(2).GSRdFMuAnTF1 Block(2).GSRdFMuMiTF1]';
+
+datatable.GSRB2dfSeHuAnMiF = [Block(2).GSRdFSeHuTF0 Block(2).GSRdFSeAnTF0 Block(2).GSRdFSeMiTF0]';
+datatable.GSRB2dfSeHuAnMiT = [Block(2).GSRdFSeHuTF1 Block(2).GSRdFSeAnTF1 Block(2).GSRdFSeMiTF1]';
+
+
+datatab = struct2table(datatable);
+
+disp(datatab)
+
+cd(misofigspath);
+save(['datatab_' filenamebase],'datatab');
 cd(mainmisopath);
 
 
