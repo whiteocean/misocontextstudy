@@ -379,6 +379,7 @@ axes(hax6b)
 bh1 = bar(RatingFTMu); 
 
 legend('Foil','Target','Location','northwest')
+hax6b.XTickLabel = {'Human', 'Animal', 'Other'};
 
 hold on;
 

@@ -450,7 +450,7 @@ plot(hax4, Block(b).HRTmu, 'LineWidth',2,'Marker','none'); title('HEART')
 axis tight
 
 
-
+pause(2)
 
 
 
@@ -460,7 +460,7 @@ axis tight
 
 
 % for b = 1:3; Block(b).GSRmu = Block(b).ARMmu; end
-% for b = 1:3; Block(b).GSRmu = Block(b).NEKmu; end
+for b = 1:3; Block(b).GSRmu = Block(b).NEKmu; end
 % for b = 1:3; Block(b).GSRmu = Block(b).HRTmu; end
 
 
