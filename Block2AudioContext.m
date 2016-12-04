@@ -2,7 +2,7 @@
 %remember: command . and "sca" to stop and get out of psyc toolbox
 
 clc; clear all; clear functions;
-cd('/Users/Miren/Documents/MATLAB/MisoContextStudy/')
+cd('/Users/Miren/Documents/MATLAB/GIT/misocontextstudy')
  
 %% Get Subject Initials
 
@@ -18,14 +18,14 @@ Order.Text = listdlg('PromptString','Select TEXT order:',...
 
 
 %% SELECT DIRECTORY CONTAINING ONLY M4A AUDIO FILES
-filedir = ['/Users/Miren/Documents/MATLAB/MisoContextStudy/Audio36']; %change to big folder when ready
+filedir = ['/Users/Miren/Documents/MATLAB/GIT/misocontextstudy/Audio36']; %change to big folder when ready
 acFiles = dir([filedir,'/*.m4a']);
 acFileNames = {acFiles(:).name}';
 
 
 %% IMPORT XLS DATA FOR ORDERINGS AND TEXT DESCRIPTIONS
 
-[xlsNums, xlsTxt, xlsRaw] = xlsread('/Users/Miren/Documents/MATLAB/MisoContextStudy/MisoSoundsOrder.xlsx');
+[xlsNums, xlsTxt, xlsRaw] = xlsread('/Users/Miren/Documents/MATLAB/GIT/misocontextstudy/MisoSoundsOrder.xlsx');
 xlsTxt(1,:) = [];
 
 
@@ -162,7 +162,7 @@ targetfoil = targetORfoil';
 
 T = table(timings(1:4:end)',timings(2:4:end)',timings(3:4:end)',timings(4:4:end)', ...
     orderingarray, textpresarray, targetfoil,...
-     'VariableNames',{'StartTrial' 'StartClip' 'EndClip' 'EndTrial' 'SoundPresented' 'TextPresented' 'TargetFoil'}); %writes into a table
+     'VariableNames',{'StartTrial' 'StartClip' 'EndClip' 'EndTrial' 'SoundPresented' 'TextPresented' 'FoilTarget'}); %writes into a table
 
 save(sprintf('ACBlock2_%s_%s_SoundOrder%d_TextOrder%d.mat',date,[SubConfig{1}], OrderSound, OrderText),'T'); %write as mat file
 writetable(T,sprintf('ACBlock2_%s_%s_SoundOrder%d_TextOrder%d.csv',date,[SubConfig{1}],OrderSound, OrderText)); %write as csv file
