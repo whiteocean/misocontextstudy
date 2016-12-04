@@ -1,16 +1,15 @@
 %% Block 1 Audio Only
 %remember: command . and "sca" to stop and get out of psyc toolbox
-
-%look into why it repeats certain "randomly" generated sequences. 
-clc; clear all; clear functions;
-cd('/Users/Miren/Documents/MATLAB/MisoContextStudy/')
+rng('shuffle') %prevents code from repeating only certain "randomly" generated sequences. 
+clc; clear; clear functions;
+cd('/Users/Miren/Documents/MATLAB/GIT/misocontextstudy')
 %% Get Subject Initials
 
 SubConfig = inputdlg('Enter in initials','Input',1,{'MHE'});
 
 
 %% SELECT DIRECTORY CONTAINING ONLY M4A AUDIO FILES
-filedir = ['/Users/Miren/Documents/MATLAB/MisoContextStudy/Audio36']; 
+filedir = ['/Users/Miren/Documents/MATLAB/GIT/misocontextstudy/Audio36']; 
 aFiles = dir([filedir,'/*.m4a']);
 aFileNames = {aFiles(:).name}';
 
