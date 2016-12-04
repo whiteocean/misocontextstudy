@@ -1,15 +1,18 @@
 %% Block 3 Audio Visual 
 %remember: command . and "sca" to stop and get out of psyc toolbox
+rng('shuffle')
+clc; clear; clear functions;
+cd('/Users/Miren/Documents/MATLAB/GIT/misocontextstudy')
 
-clc; clear all; clear functions;
-cd('/Users/Miren/Documents/MATLAB/MisoContextStudy/')
+
+
 
 %SubConfig = input('Enter in initials: ','s');
 SubConfig = inputdlg('Enter in initials','Input',1,{'MHE'});
 
 %%
 
-filedir = ['/Users/Miren/Documents/MATLAB/MisoContextStudy/Video36']; 
+filedir = ['/Users/Miren/Documents/MATLAB/GIT/misocontextstudy/Video36']; 
 avFiles = dir([filedir,'/*.mp4']);
 avFileNames = {avFiles(:).name}';
 
