@@ -4,12 +4,15 @@ bin-debug/
 .settings/
 archive
 archive/*
+Archive
+Archive/*
 misodata
 misodata/*
 Video36/*
 Audio36/*
 SubFiles/*
 misofigs/*
+Analyses/*
 
 # Executables
 *.m~
