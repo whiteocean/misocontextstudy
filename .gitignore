@@ -12,8 +12,9 @@ Video36/*
 Audio36/*
 SubFiles/*
 misofigs/*
-Analyses/*
+# Analyses/*
 
 # Executables
 *.m~
 .DS_Store
+*.zip
