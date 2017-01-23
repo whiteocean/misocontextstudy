@@ -138,17 +138,32 @@ B1sounds = {B1tT{2:37,5}}';
 B2sounds = {B2tT{2:37,5}}';
 B3sounds = {B3tT{2:37,5}}';
 
+for nn = 1:size(B1sounds,1)
+    B1sounds{nn} = B1sounds{nn}(1:end-4);
+    B2sounds{nn} = B2sounds{nn}(1:end-4);
+    B3sounds{nn} = B3sounds{nn}(1:end-4);
+end
+
+SoundFiles = [B1sounds B2sounds B3sounds];
+
+[C,soB1,soB2] = intersect(B1sounds,B2sounds,'stable');
+[C,soB1,soB3] = intersect(B1sounds,B3sounds,'stable');
+
+SoundO = [soB1 soB2 soB3];
+
+
+%{
 SoundO = zeros(36,3);
 SoundO(:,1) = 1:36;
 
 for sb1 = 1:size(B1sounds,1)
     
-    B1S = B1sounds{sb1}; B1S=B1S(1:end-4);
+    B1S = B1sounds{sb1};
     
     for sb2 = 1:size(B1sounds,1)
         
-        B2S = B2sounds{sb2}; B2S=B2S(1:end-4);
-        B3S = B3sounds{sb2}; B3S=B3S(1:end-4);
+        B2S = B2sounds{sb2};
+        B3S = B3sounds{sb2};
 
         if strcmp(B1S,B2S)
             SoundO(sb2,2) = sb1;
@@ -160,7 +175,11 @@ for sb1 = 1:size(B1sounds,1)
 end
 
 
+if nf == 4
+    keyboard
+end
 
+%}
 % -------------------------------------------------
 
 
@@ -239,7 +258,7 @@ Block(3).OL = B1tN(3,12:14);
 
 
 clearvars -except nf ratingData Block filenamebase mainmisopath misofigspath ...
-                  datapaths datapath datafile datafiles doGraphs SoundO
+                  datapaths datapath datafile datafiles doGraphs SoundO SoundFiles
 
 datatable = struct;
 
@@ -258,7 +277,7 @@ B2minusB1rats = B2soundratings - B1soundratings;
 B3minusB1rats = B3soundratings - B1soundratings;
 B1minusB3rats = B1soundratings - B3soundratings;
 
-
+SoundRatings = [B1soundratings B2soundratings B3soundratings];
 DeltaRatings = [B1minusB3rats B2minusB1rats B3minusB1rats];
 
 
@@ -313,9 +332,7 @@ Block(b).MiscTarg = MiscTarg;
 end
 
 
-if nf == 4
-    keyboard
-end
+
 
 DFsoundHumnB1 = mean(DeltaRatings(Block(1).Humn , 1 ));
 DFsoundHumnB2 = mean(DeltaRatings(Block(1).Humn , 2 ));
@@ -332,9 +349,13 @@ DFsoundMiscB3 = mean(DeltaRatings(Block(1).Misc , 3 ));
 
 
 
+if nf == 4
+    keyboard
+end
+
 %% --------- PLOT Self-Report Ratings in Auditory, Informed, Visual Blocks --------
 clearvars -except nf ratingData Block filenamebase mainmisopath misofigspath ...
-         datatable datapaths datapath datafile datafiles doGraphs SoundO DeltaRatings
+         datatable datapaths datapath datafile datafiles doGraphs SoundO SoundFiles DeltaRatings
 close all
 
 if doGraphs
