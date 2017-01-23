@@ -265,6 +265,9 @@ datatable = struct;
 
 %% ------------------------------------------------------------------------
 
+% SoundFiles{SoundO(1,1),1}
+% SoundFiles{SoundO(1,2),2}
+% SoundFiles{SoundO(1,3),3}
 
 % GET SOUND ORDERINGS AND DELTA RATINGS AROSS SAME SOUNDS
 B1soundratings = Block(1).Rating(SoundO(:,1));
@@ -280,8 +283,15 @@ B1minusB3rats = B1soundratings - B3soundratings;
 SoundRatings = [B1soundratings B2soundratings B3soundratings];
 DeltaRatings = [B1minusB3rats B2minusB1rats B3minusB1rats];
 
+% T = table(SoundFiles,SoundO,'RowNames',{SoundFiles{:,1}}')
 
+fnb = repmat(filenamebase,36,1);
+fnbn = cellstr(strcat(fnb,'_',num2str((1:36)')));
+T = table(SoundFiles,SoundO,SoundRatings,'RowNames',fnbn);
 
+cd(misofigspath);
+writetable(T,[filenamebase '__SoundOrderRatings.csv'])
+cd(mainmisopath);
 
 
 
