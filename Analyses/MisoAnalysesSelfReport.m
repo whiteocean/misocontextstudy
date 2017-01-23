@@ -359,9 +359,9 @@ DFsoundMiscB3 = mean(DeltaRatings(Block(1).Misc , 3 ));
 
 
 
-if nf == 4
-    keyboard
-end
+% if nf == 4
+%     keyboard
+% end
 
 %% --------- PLOT Self-Report Ratings in Auditory, Informed, Visual Blocks --------
 clearvars -except nf ratingData Block filenamebase mainmisopath misofigspath ...
