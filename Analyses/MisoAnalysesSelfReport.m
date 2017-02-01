@@ -1,4 +1,4 @@
-%% MisoAnalyses.m
+%% MisoAnalysesSelfReport.m
 clc; close all; clear all;
 
 doGraphs = 0;
@@ -131,7 +131,10 @@ ContMisoB1 = B1tN(:,8);
 ContMisoB2 = B2tN(:,8);
 ContMisoB3 = B3tN(:,8);
 
+
 FoilTarget = B2tN(:,10);
+FTYesNo = B2tN(:,11);
+FTCorrect = B2tN(:,12);
 
 
 B1sounds = {B1tT{2:37,5}}';
@@ -216,22 +219,28 @@ Block(1).GSRmu      = [];
 Block(1).HRTmu      = [];
 Block(1).RatingMu   = [];
 Block(1).RatingSe   = [];
+Block(1).HAMguess   = B1tN(:,9);
+Block(1).HAMrating  = [];
+Block(1).FTYesNo    = [];
+Block(1).FTCorrect  = B1tN(:,10);
 
 
-
-Block(2).SubData = SubDataB2;
-Block(2).ARM = SubDataB2(:,1);
-Block(2).NEK = SubDataB2(:,2);
-Block(2).GSR = SubDataB2(:,3);
-Block(2).HRT = SubDataB2(:,4);
+Block(2).SubData    = SubDataB2;
+Block(2).ARM        = SubDataB2(:,1);
+Block(2).NEK        = SubDataB2(:,2);
+Block(2).GSR        = SubDataB2(:,3);
+Block(2).HRT        = SubDataB2(:,4);
 Block(2).StartTrial = StartTrialB2;
-Block(2).StartClip = StartClipB2;
-Block(2).EndClip = EndClipB2;
-Block(2).EndTrial = EndTrialB2;
+Block(2).StartClip  = StartClipB2;
+Block(2).EndClip    = EndClipB2;
+Block(2).EndTrial   = EndTrialB2;
 Block(2).HumanAnimalNon = HumanAnimalNonB2;
-Block(2).Rating = RatingB2;
-Block(2).ContMiso = ContMisoB2;
+Block(2).Rating     = RatingB2;
+Block(2).ContMiso   = ContMisoB2;
 Block(2).FoilTarget = FoilTarget;
+Block(2).FTYesNo    = FTYesNo;
+Block(2).FTCorrect  = FTCorrect;
+
 
 Block(3).SubData = SubDataB3;
 Block(3).ARM = SubDataB3(:,1);
@@ -283,15 +292,15 @@ B1minusB3rats = B1soundratings - B3soundratings;
 SoundRatings = [B1soundratings B2soundratings B3soundratings];
 DeltaRatings = [B1minusB3rats B2minusB1rats B3minusB1rats];
 
-% T = table(SoundFiles,SoundO,'RowNames',{SoundFiles{:,1}}')
 
 fnb = repmat(filenamebase,36,1);
 fnbn = cellstr(strcat(fnb,'_',num2str((1:36)')));
 T = table(SoundFiles,SoundO,SoundRatings,'RowNames',fnbn);
 
-cd(misofigspath);
-writetable(T,[filenamebase '__SoundOrderRatings.csv'])
-cd(mainmisopath);
+% Block(2)
+% cd(misofigspath);
+% writetable(T,[filenamebase '__SoundOrderRatings.csv'])
+% cd(mainmisopath);
 
 
 
@@ -355,6 +364,27 @@ DFsoundAnimB3 = mean(DeltaRatings(Block(1).Anim , 3 ));
 DFsoundMiscB1 = mean(DeltaRatings(Block(1).Misc , 1 ));
 DFsoundMiscB2 = mean(DeltaRatings(Block(1).Misc , 2 ));
 DFsoundMiscB3 = mean(DeltaRatings(Block(1).Misc , 3 ));
+
+
+
+% UPDATE OUTPUT TABLE TO INCLUDE HAM AND TARG/FOIL INFO
+
+B1_HAM = Block(1).HumanAnimalNon;
+B1_HAMguess = Block(1).HAMguess;
+B1_OK = Block(1).FTCorrect;
+
+B2_FT = Block(2).FoilTarget(SoundO(:,2));
+B2_YN = Block(2).FTYesNo(SoundO(:,2));
+B2_OK = Block(2).FTCorrect(SoundO(:,2));
+
+
+T2 = table(B1_HAM,B1_HAMguess,B1_OK,B2_FT,B2_YN,B2_OK);
+MisoTable = [T T2];
+
+
+cd(misofigspath);
+writetable(MisoTable,[filenamebase '__RatingsTable.csv'])
+cd(mainmisopath);
 
 
 
@@ -569,7 +599,7 @@ end
 close all
 if doGraphs
     
-    fh91=figure('Units','normalized','OuterPosition',[.05 .05 .8 .7],'Color','w','MenuBar','none');
+    fh91=figure('Units','normalized','OuterPosition',[.05 .05 .8 .85],'Color','w'); % ,'MenuBar','none'
     hax91a = axes('Position',[.05 .05 .4 .9],'Color','none');
     hax91b = axes('Position',[.51 .05 .4 .9],'Color','none'); 
 
@@ -587,7 +617,7 @@ if doGraphs
 
 
 
-    fh92=figure('Units','normalized','OuterPosition',[.05 .05 .8 .7],'Color','w','MenuBar','none');
+    fh92=figure('Units','normalized','OuterPosition',[.05 .05 .8 .85],'Color','w'); % ,'MenuBar','none'
     hax92a = axes('Position',[.05 .05 .4 .9],'Color','none');
     hax92b = axes('Position',[.51 .05 .4 .9],'Color','none'); 
 
@@ -605,7 +635,7 @@ if doGraphs
 
 
 
-    fh93=figure('Units','normalized','OuterPosition',[.05 .05 .8 .7],'Color','w','MenuBar','none');
+    fh93=figure('Units','normalized','OuterPosition',[.05 .05 .8 .85],'Color','w'); % ,'MenuBar','none'
     hax93a = axes('Position',[.05 .05 .4 .9],'Color','none');
     hax93b = axes('Position',[.51 .05 .4 .9],'Color','none'); 
 
@@ -651,7 +681,8 @@ if doGraphs
 
     axes(hax91a)
     bh1 = bar([MISOHU MISOAN MISOMI]);
-    legend('Human','Animal','Other','Location','northwest')
+    lh1 = legend('Human','Animal','Other','Location','northwest');
+    lh1.FontSize = 14;
 
     hold on;
 
@@ -664,8 +695,8 @@ if doGraphs
 
     axes(hax91b)
     bh2 = bar([CONTHU CONTAN CONTMI]);
-    legend('Human','Animal','Other','Location','northwest')
-
+    lh2 = legend('Human','Animal','Other','Location','northwest');
+    lh2.FontSize = 14;
     hold on;
 
     errorbar([1-.22 1 1+.22; 2-.22 2 2+.22; 3-.22 3 3+.22], ...
